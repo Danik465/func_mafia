@@ -55,9 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const cardNumber = card.querySelector('.card-number');
             cardNumber.textContent = i;
             
-            // Сохраняем исходный текст с номером
-            cardText.setAttribute('data-original', i);
-            cardText.textContent = i;
+
             
             // Устанавливаем изображение по умолчанию
             defaultImage.src = `${DEFAULT_IMAGE_PATH}.png`;
@@ -84,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Создаем контейнер для карточек мафии
             const mafiaContainer = document.createElement('div');
             mafiaContainer.className = 'mafia-cards-container';
+            mafiaContainer.id = `mafia-container-${i}`;
             card.appendChild(mafiaContainer);
             
             // Создаем три карточки разных цветов (изображения)
@@ -93,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 cardElement.id = `mafia-card-${cardType}-${i}`;
                 cardElement.src = mafiaCardImages[cardType];
                 cardElement.alt = `${cardType} card`;
+                cardElement.style.display = 'none'; // ИЗМЕНЕНО: Явно скрываем карточки
                 mafiaContainer.appendChild(cardElement);
             }
             
@@ -271,9 +271,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Инициализация плашек
     initializeCards();
 
-    // Обработчики для ввода имен
+   // Обработчики для ввода имен
     const nameInputs = document.querySelectorAll('.name-input');
     nameInputs.forEach(input => {
+        let previousValue = ''; // Добавляем переменную для хранения предыдущего значения
+        
         input.addEventListener('input', function() {
             const cardId = this.getAttribute('data-card');
             const enteredName = this.value;
@@ -289,8 +291,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 nameElement.style.display = 'none';
             }
             
-            // Запускаем анимацию плашки при вводе имени
-            animateCard(cardId);
+            // Запускаем анимацию плашки только при появлении/исчезновении имени
+            // (когда имя становится пустым/непустым)
+            if ((previousValue === '' && enteredName !== '') || 
+                (previousValue !== '' && enteredName === '')) {
+                animateCard(cardId);
+            }
+            
+            previousValue = enteredName; // Обновляем предыдущее значение
         });
     });
 
@@ -409,93 +417,91 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Добавляем обработчики для кнопок статусов (заголосован/отстрел)
-    const statusButtons = document.querySelectorAll('.status-button');
 
-    statusButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const cardId = this.getAttribute('data-card');
-            const status = this.getAttribute('data-status');
-            const card = document.getElementById(`card-${cardId}`);
-            const statusIcon = document.getElementById(`status-icon-${cardId}`);
-            const nameElement = nameElements[cardId];
-            const roleIcon = document.getElementById(`role-icon-${cardId}`);
-            const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
-            
-            // Убираем выделение с всех кнопок статусов для этой плашки
-            const allStatusButtonsForCard = document.querySelectorAll(`.status-button[data-card="${cardId}"]`);
-            allStatusButtonsForCard.forEach(btn => btn.classList.remove('selected'));
-            
-            // Добавляем выделение на clicked кнопку
-            this.classList.add('selected');
-            
-            // Устанавливаем правильный src для иконки статуса
-            statusIcon.src = statusIcons[status];
-            
-            // Устанавливаем статус плашки
-            if (status === 'voted') {
-                card.classList.remove('shot', 'removed');
-                card.classList.add('voted');
-                // Добавляем класс для имени
-                nameElement.classList.remove('shot', 'removed');
-                nameElement.classList.add('voted');
-                // Добавляем класс для иконки роли
-                if (roleIcon.style.display === 'block') {
-                    roleIcon.classList.remove('shot', 'removed');
-                    roleIcon.classList.add('voted');
-                }
-                // Добавляем класс для иконки черной карты
-                if (blackCardIcon.style.display === 'block') {
-                    blackCardIcon.classList.remove('shot', 'removed');
-                    blackCardIcon.classList.add('voted');
-                }
+   // Добавляем обработчики для кнопок статусов (заголосован/отстрел/удален)
+const statusButtons = document.querySelectorAll('.status-button');
 
-            } else if (status === 'shot') {
-                card.classList.remove('voted','removed');
-                card.classList.add('shot');
-                 // Добавляем класс для имени
-                nameElement.classList.remove('voted', 'removed');
-                nameElement.classList.add('shot');
-                // Добавляем класс для иконки роли
-                if (roleIcon.style.display === 'block') {
-                    roleIcon.classList.remove('voted', 'removed');
-                    roleIcon.classList.add('shot');
-                }
-                // Добавляем класс для иконки черной карты
-                if (blackCardIcon.style.display === 'block') {
-                    blackCardIcon.classList.remove('voted', 'removed');
-                    blackCardIcon.classList.add('shot');
-                }
-            } else if (status === 'removed') {
-                card.classList.remove('voted', 'shot');
-                card.classList.add('removed');
-                
-                // Добавляем класс для имени
-                nameElement.classList.remove('voted', 'shot');
-                nameElement.classList.add('removed');
-                // Добавляем класс для иконки роли
-                if (roleIcon.style.display === 'block') {
-                    roleIcon.classList.remove('voted', 'shot');
-                    roleIcon.classList.add('removed');
-                }
-                // Добавляем класс для иконки черной карты
-                if (blackCardIcon.style.display === 'block') {
-                    blackCardIcon.classList.remove('voted', 'shot');
-                    blackCardIcon.classList.add('removed');
-                }
+statusButtons.forEach(button => {
+    button.addEventListener('click', function() {
+        const cardId = this.getAttribute('data-card');
+        const status = this.getAttribute('data-status');
+        const card = document.getElementById(`card-${cardId}`);
+        const statusIcon = document.getElementById(`status-icon-${cardId}`);
+        const nameElement = nameElements[cardId];
+        const roleIcon = document.getElementById(`role-icon-${cardId}`);
+        const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
+        
+        // Сохраняем текущее состояние видимости иконки черной карты
+        const wasBlackCardIconVisible = blackCardIcon.style.display === 'block';
+        
+        // Убираем выделение с всех кнопок статусов для этой плашки
+        const allStatusButtonsForCard = document.querySelectorAll(`.status-button[data-card="${cardId}"]`);
+        allStatusButtonsForCard.forEach(btn => btn.classList.remove('selected'));
+        
+        // Добавляем выделение на clicked кнопку
+        this.classList.add('selected');
+        
+        // Устанавливаем правильный src для иконки статуса
+        statusIcon.src = statusIcons[status];
+        
+        // Устанавливаем статус плашки
+        if (status === 'voted') {
+            card.classList.remove('shot', 'removed');
+            card.classList.add('voted');
+            // Добавляем класс для имени
+            nameElement.classList.remove('shot', 'removed');
+            nameElement.classList.add('voted');
+            // Добавляем класс для иконки роли
+            if (roleIcon.style.display === 'block') {
+                roleIcon.classList.remove('shot', 'removed');
+                roleIcon.classList.add('voted');
             }
-                        
-            // Показываем значок статуса
-            statusIcon.style.display = 'block';
+        } else if (status === 'shot') {
+            card.classList.remove('voted','removed');
+            card.classList.add('shot');
+             // Добавляем класс для имени
+            nameElement.classList.remove('voted', 'removed');
+            nameElement.classList.add('shot');
+            // Добавляем класс для иконки роли
+            if (roleIcon.style.display === 'block') {
+                roleIcon.classList.remove('voted', 'removed');
+                roleIcon.classList.add('shot');
+            }
+        } else if (status === 'removed') {
+            card.classList.remove('voted', 'shot');
+            card.classList.add('removed');
             
-            // Запускаем анимацию опускания плашки
-            card.classList.remove('animate');
-            setTimeout(() => {
-                card.classList.add('status');
-            }, 10);
-        });
+            // Добавляем класс для имени
+            nameElement.classList.remove('voted', 'shot');
+            nameElement.classList.add('removed');
+            // Добавляем класс для иконки роли
+            if (roleIcon.style.display === 'block') {
+                roleIcon.classList.remove('voted', 'shot');
+                roleIcon.classList.add('removed');
+            }
+        }
+        
+        // ВОССТАНАВЛИВАЕМ видимость иконки черной карты, если она была видимой
+        if (wasBlackCardIconVisible) {
+            blackCardIcon.style.display = 'block';
+            
+            // Также применяем соответствующий класс статуса к иконке черной карты
+            blackCardIcon.classList.remove('voted', 'shot', 'removed');
+            blackCardIcon.classList.add(status);
+        }
+                    
+        // Показываем значок статуса
+        statusIcon.style.display = 'block';
+        
+        // Запускаем анимацию опускания плашки
+        card.classList.remove('animate');
+        setTimeout(() => {
+            card.classList.add('status');
+        }, 10);
     });
+});
 
+    
     // Обработчики для кнопок карточек мафии
     const cardButtons = document.querySelectorAll('.card-button');
 
@@ -504,7 +510,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const cardId = this.getAttribute('data-card');
             const cardType = this.getAttribute('data-card-type');
             const card = document.getElementById(`card-${cardId}`);
-            const mafiaCard = card.querySelector(`#mafia-card-${cardType}-${cardId}`);
+            const mafiaCard = document.getElementById(`mafia-card-${cardType}-${cardId}`);
+
+            if (!mafiaCard) {
+                console.error(`Карточка мафии не найдена: mafia-card-${cardType}-${cardId}`);
+                return;
+            }
             
             // Переключаем состояние карточки
             selectedMafiaCards[cardId][cardType] = !selectedMafiaCards[cardId][cardType];
@@ -517,6 +528,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 mafiaCard.style.display = 'none';
                 this.classList.remove('selected');
             }
+
+             // ИЗМЕНЕНО: Добавляем анимацию при переключении
+            mafiaCard.classList.remove('animate');
+            setTimeout(() => {
+                mafiaCard.classList.add('animate');
+            }, 10);
+
+
         });
     });
 
