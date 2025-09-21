@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плашки с анимацией опускания</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+     <div class="container">
+        <h1>Плашки с анимацией опускания</h1>
+    <div class="cards-row">
+        <!-- Плашки 1-10 -->
+        <div class="card-wrapper">
+            <div class="card" id="card-1">
+                <div class="card-number">1</div> <!-- ДОБАВЛЕНО: Номер плашки -->
+                <div class="card-text">1</div>
+                <img class="default-image" src="default.png" alt="Изображение 1">
+                <img class="status-icon" id="status-icon-1" alt="Статус">
+                <!-- Контейнер для карточек мафии будет создан в JavaScript -->
+            </div>
+            <img class="role-icon" id="role-icon-1" alt="Роль">
+            <!-- ДОБАВЛЕНО: Иконка черной карты -->
+            <img class="black-card-icon" id="black-card-icon-1" src="Roles/Мафия.svg" alt="Черная карта">
+        </div>
+        <div class="card-wrapper">
+            <div class="card" id="card-2">
+                <div class="card-number">2</div> <!-- ДОБАВЛЕНО: Номер плашки -->
+                <div class="card-text">2</div>
+                <img class="default-image" src="default.png" alt="Изображение 2">
+                <img class="status-icon" id="status-icon-2" alt="Статус">
+            </div>
+            <img class="role-icon" id="role-icon-2" alt="Роль">
+            <!-- ДОБАВЛЕНО: Иконка черной карты -->
+            <img class="black-card-icon" id="black-card-icon-2" src="Roles/Мафия.svg" alt="Черная карта">
+        </div>
+        <div class="card-wrapper">
+            <div class="card" id="card-3">
+                <div class="card-number">3</div> <!-- ДОБАВЛЕНО: Номер плашки -->
+                <div class="card-text">3</div>
+                <img class="default-image" src="default.png" alt="Изображение 3">
+                <img class="status-icon" id="status-icon-3" alt="Статус">
+            </div>
+            <img class="role-icon" id="role-icon-3" alt="Роль">
+            <!-- ДОБАВЛЕНО: Иконка черной карты -->
+            <img class="black-card-icon" id="black-card-icon-3" src="Roles/Мафия.svg" alt="Черная карта">
+        </div>
+        <div class="card-wrapper">
+            <div class="card" id="card-4">
+                <div class="card-number">4</div> <!-- ДОБАВЛЕНО: Номер плашки -->
+                <div class="card-text">4</div>
+                <img class="default-image" src="default.png" alt="Изображение 4">
+                <img class="status-icon" id="status-icon-4" alt="Статус">
+            </div>
+            <img class="role-icon" id="role-icon-4" alt="Роль">
+            <!-- ДОБАВЛЕНО: Иконка черной карты -->
+            <img class="black-card-icon" id="black-card-icon-4" src="Roles/Мафия.svg" alt="Черная карта">
+        </div>
+        <div class="card-wrapper">
+            <div class="card" id="card-5">
+                <div class="card-number">5</div> <!-- ДОБАВЛЕНО: Номер плашки -->
+                <div class="card-text">5</div>
+                <img class="default-image" src="default.png" alt="Изображение 5">
+                <img class="status-icon" id="status-icon-5" alt="Статус">
+            </div>
+            <img class="role-icon" id="role-icon-5" alt="Роль">
+            <!-- ДОБАВЛЕНО: Иконка черной карты -->
+            <img class="black-card-icon" id="black-card-icon-5" src="Roles/Мафия.svg" alt="Черная карта">
+        </div>
+        <div class="card-wrapper">
+            <div class="card" id="card-6">
+                <div class="card-number">6</div> <!-- ДОБАВЛЕНО: Номер плашки -->
+                <div class="card-text">6</div>
+                <img class="default-image" src="default.png" alt="Изображение 6">
+                <img class="status-icon" id="status-icon-6" alt="Статус">
+            </div>
+            <img class="role-icon" id="role-icon-6" alt="Роль">
+            <!-- ДОБАВЛЕНО: Иконка черной карты -->
+            <img class="black-card-icon" id="black-card-icon-6" src="Roles/Мафия.svg" alt="Черная карта">
+        </div>
+        <div class="card-wrapper">
+            <div class="card" id="card-7">
+                <div class="card-number">7</div> <!-- ДОБАВЛЕНО: Номер плашки -->
+                <div class="card-text">7</div>
+                <img class="default-image" src="default.png" alt="Изображение 7">
+                <img class="status-icon" id="status-icon-7" alt="Статус">
+            </div>
+            <img class="role-icon" id="role-icon-7" alt="Роль">
+            <!-- ДОБАВЛЕНО: Иконка черной карты -->
+            <img class="black-card-icon" id="black-card-icon-7" src="Roles/Мафия.svg" alt="Черная карта">
+        </div>
+        <div class="card-wrapper">
+            <div class="card" id="card-8">
+                <div class="card-number">8</div> <!-- ДОБАВЛЕНО: Номер плашки -->
+                <div class="card-text">8</div>
+                <img class="default-image" src="default.png" alt="Изображение 8">
+                <img class="status-icon" id="status-icon-8" alt="Статус">
+            </div>
+            <img class="role-icon" id="role-icon-8" alt="Роль">
+            <!-- ДОБАВЛЕНО: Иконка черной карты -->
+            <img class="black-card-icon" id="black-card-icon-8" src="Roles/Мафия.svg" alt="Черная карта">
+        </div>
+        <div class="card-wrapper">
+            <div class="card" id="card-9">
+                <div class="card-number">9</div> <!-- ДОБАВЛЕНО: Номер плашки -->
+                <div class="card-text">9</div>
+                <img class="default-image" src="default.png" alt="Изображение 9">
+                <img class="status-icon" id="status-icon-9" alt="Статус">
+            </div>
+            <img class="role-icon" id="role-icon-9" alt="Роль">
+            <!-- ДОБАВЛЕНО: Иконка черной карты -->
+            <img class="black-card-icon" id="black-card-icon-9" src="Roles/Мафия.svg" alt="Черная карта">
+        </div>
+        <div class="card-wrapper">
+            <div class="card" id="card-10">
+                <div class="card-number">10</div> <!-- ДОБАВЛЕНО: Номер плашки -->
+                <div class="card-text">10</div>
+                <img class="default-image" src="default.png" alt="Изображение 10">
+                <img class="status-icon" id="status-icon-10" alt="Статус">
+            </div>
+            <img class="role-icon" id="role-icon-10" alt="Роль">
+            <!-- ДОБАВЛЕНО: Иконка черной карты -->
+            <img class="black-card-icon" id="black-card-icon-10" src="Roles/Мафия.svg" alt="Черная карта">
+        </div>
+    </div>
+    
+    <div class="error-message" id="role-error"></div>
+    
+    <div class="control-panel">
+        <h2>Панель управления</h2>
+
+        <div class="name-select-container">
+            <h3>Выбор имен для плашек</h3>
+             <div class="name-input-row">
+        <!-- Текстовые поля для ввода имен -->
+        <span class="name-input-label">1:</span>
+        <input type="text" class="name-input" data-card="1" placeholder="Введите имя">
+
+        <span class="name-input-label">2:</span>
+        <input type="text" class="name-input" data-card="2" placeholder="Введите имя">
+
+        <span class="name-input-label">3:</span>
+        <input type="text" class="name-input" data-card="3" placeholder="Введите имя">
+
+        <span class="name-input-label">4:</span>
+        <input type="text" class="name-input" data-card="4" placeholder="Введите имя">
+
+        <span class="name-input-label">5:</span>
+        <input type="text" class="name-input" data-card="5" placeholder="Введите имя">
+
+        <span class="name-input-label">6:</span>
+        <input type="text" class="name-input" data-card="6" placeholder="Введите имя">
+
+        <span class="name-input-label">7:</span>
+        <input type="text" class="name-input" data-card="7" placeholder="Введите имя">
+
+        <span class="name-input-label">8:</span>
+        <input type="text" class="name-input" data-card="8" placeholder="Введите имя">
+
+        <span class="name-input-label">9:</span>
+        <input type="text" class="name-input" data-card="9" placeholder="Введите имя">
+
+        <span class="name-input-label">10:</span>
+        <input type="text" class="name-input" data-card="10" placeholder="Введите имя">
+    </div>
+</div>
+        </div>
+
+        <div class="button-rows">
+            <div class="button-row">
+                <!-- Кнопки для выбора красного цвета -->
+                <button class="control-button red-button" data-card="1" data-color="red"></button>
+                <button class="control-button red-button" data-card="2" data-color="red"></button>
+                <button class="control-button red-button" data-card="3" data-color="red"></button>
+                <button class="control-button red-button" data-card="4" data-color="red"></button>
+                <button class="control-button red-button" data-card="5" data-color="red"></button>
+                <button class="control-button red-button" data-card="6" data-color="red"></button>
+                <button class="control-button red-button" data-card="7" data-color="red"></button>
+                <button class="control-button red-button" data-card="8" data-color="red"></button>
+                <button class="control-button red-button" data-card="9" data-color="red"></button>
+                <button class="control-button red-button" data-card="10" data-color="red"></button>
+            </div>
+            <div class="button-row">
+                <!-- Кнопки для выбора черного цвета -->
+                <button class="control-button black-button" data-card="1" data-color="black"></button>
+                <button class="control-button black-button" data-card="2" data-color="black"></button>
+                <button class="control-button black-button" data-card="3" data-color="black"></button>
+                <button class="control-button black-button" data-card="4" data-color="black"></button>
+                <button class="control-button black-button" data-card="5" data-color="black"></button>
+                <button class="control-button black-button" data-card="6" data-color="black"></button>
+                <button class="control-button black-button" data-card="7" data-color="black"></button>
+                <button class="control-button black-button" data-card="8" data-color="black"></button>
+                <button class="control-button black-button" data-card="9" data-color="black"></button>
+                <button class="control-button black-button" data-card="10" data-color="black"></button>
+            </div>
+        </div>
+
+        <div class="role-buttons-container">
+            <h3>Выбор ролей</h3>
+            <div class="role-button-row">
+                <!-- Кнопки для выбора шерифа -->
+                <button class="role-button sheriff" data-card="1" data-role="sheriff">Шериф</button>
+                <button class="role-button sheriff" data-card="2" data-role="sheriff">Шериф</button>
+                <button class="role-button sheriff" data-card="3" data-role="sheriff">Шериф</button>
+                <button class="role-button sheriff" data-card="4" data-role="sheriff">Шериф</button>
+                <button class="role-button sheriff" data-card="5" data-role="sheriff">Шериф</button>
+                <button class="role-button sheriff" data-card="6" data-role="sheriff">Шериф</button>
+                <button class="role-button sheriff" data-card="7" data-role="sheriff">Шериф</button>
+                <button class="role-button sheriff" data-card="8" data-role="sheriff">Шериф</button>
+                <button class="role-button sheriff" data-card="9" data-role="sheriff">Шериф</button>
+                <button class="role-button sheriff" data-card="10" data-role="sheriff">Шериф</button>
+            </div>
+            <div class="role-button-row">
+                <!-- Кнопки для выбора дона -->
+                <button class="role-button don" data-card="1" data-role="don">Дон</button>
+                <button class="role-button don" data-card="2" data-role="don">Дон</button>
+                <button class="role-button don" data-card="3" data-role="don">Дон</button>
+                <button class="role-button don" data-card="4" data-role="don">Дон</button>
+                <button class="role-button don" data-card="5" data-role="don">Дон</button>
+                <button class="role-button don" data-card="6" data-role="don">Дон</button>
+                <button class="role-button don" data-card="7" data-role="don">Дон</button>
+                <button class="role-button don" data-card="8" data-role="don">Дон</button>
+                <button class="role-button don" data-card="9" data-role="don">Дон</button>
+                <button class="role-button don" data-card="10" data-role="don">Дон</button>
+            </div>
+        </div>
+
+        <div class="status-buttons-container">
+            <h3>Действия с плашками</h3>
+            <div class="status-button-row">
+                <!-- Кнопки для отметки "Заголосован" -->
+                <button class="status-button voted" data-card="1" data-status="voted">Заголосован</button>
+                <button class="status-button voted" data-card="2" data-status="voted">Заголосован</button>
+                <button class="status-button voted" data-card="3" data-status="voted">Заголосован</button>
+                <button class="status-button voted" data-card="4" data-status="voted">Заголосован</button>
+                <button class="status-button voted" data-card="5" data-status="voted">Заголосован</button>
+                <button class="status-button voted" data-card="6" data-status="voted">Заголосован</button>
+                <button class="status-button voted" data-card="7" data-status="voted">Заголосован</button>
+                <button class="status-button voted" data-card="8" data-status="voted">Заголосован</button>
+                <button class="status-button voted" data-card="9" data-status="voted">Заголосован</button>
+                <button class="status-button voted" data-card="10" data-status="voted">Заголосован</button>
+            </div>
+            <div class="status-button-row">
+                <!-- Кнопки для отметки "Отстрел" -->
+                <button class="status-button shot" data-card="1" data-status="shot">Отстрел</button>
+                <button class="status-button shot" data-card="2" data-status="shot">Отстрел</button>
+                <button class="status-button shot" data-card="3" data-status="shot">Отстрел</option>
+                <button class="status-button shot" data-card="4" data-status="shot">Отстрел</button>
+                <button class="status-button shot" data-card="5" data-status="shot">Отстрел</button>
+                <button class="status-button shot" data-card="6" data-status="shot">Отстрел</button>
+                <button class="status-button shot" data-card="7" data-status="shot">Отстрел</button>
+                <button class="status-button shot" data-card="8" data-status="shot">Отстрел</button>
+                <button class="status-button shot" data-card="9" data-status="shot">Отстрел</button>
+                <button class="status-button shot" data-card="10" data-status="shot">Отстрел</button>
+            </div>
+             <div class="status-button-row">
+    <!-- Кнопки для отметки "Удален" -->
+                <button class="status-button removed" data-card="1" data-status="removed">Удален</button>
+                <button class="status-button removed" data-card="2" data-status="removed">Удален</button>
+                <button class="status-button removed" data-card="3" data-status="removed">Удален</button>
+                <button class="status-button removed" data-card="4" data-status="removed">Удален</button>
+                <button class="status-button removed" data-card="5" data-status="removed">Удален</button>
+                <button class="status-button removed" data-card="6" data-status="removed">Удален</button>
+                <button class="status-button removed" data-card="7" data-status="removed">Удален</button>
+                <button class="status-button removed" data-card="8" data-status="removed">Удален</button>
+                <button class="status-button removed" data-card="9" data-status="removed">Удален</button>
+                <button class="status-button removed" data-card="10" data-status="removed">Удален</button>
+            </div>
+        </div>
+
+         <div class="reset-cards-container">
+            <h3>Сброс отдельных плашек</h3>
+            <div class="reset-card-button-row">
+                <button class="reset-card-button" data-card="1">Сбросить 1</button>
+                <button class="reset-card-button" data-card="2">Сбросить 2</button>
+                <button class="reset-card-button" data-card="3">Сбросить 3</button>
+                <button class="reset-card-button" data-card="4">Сбросить 4</button>
+                <button class="reset-card-button" data-card="5">Сбросить 5</button>
+                <button class="reset-card-button" data-card="6">Сбросить 6</button>
+                <button class="reset-card-button" data-card="7">Сбросить 7</button>
+                <button class="reset-card-button" data-card="8">Сбросить 8</button>
+                <button class="reset-card-button" data-card="9">Сбросить 9</button>
+                <button class="reset-card-button" data-card="10">Сбросить 10</button>
+            </div>
+        </div>
+
+        <div class="card-buttons-container">
+            <h3>Карточки мафии</h3>
+            <div class="card-button-row">
+                <!-- Кнопки для красных карточек мафии -->
+                <button class="card-button red" data-card="1" data-card-type="red">Красная</button>
+                <button class="card-button red" data-card="2" data-card-type="red">Красная</button>
+                <button class="card-button red" data-card="3" data-card-type="red">Красная</button>
+                <button class="card-button red" data-card="4" data-card-type="red">Красная</button>
+                <button class="card-button red" data-card="5" data-card-type="red">Красная</button>
+                <button class="card-button red" data-card="6" data-card-type="red">Красная</button>
+                <button class="card-button red" data-card="7" data-card-type="red">Красная</button>
+                <button class="card-button red" data-card="8" data-card-type="red">Красная</button>
+                <button class="card-button red" data-card="9" data-card-type="red">Красная</button>
+                <button class="card-button red" data-card="10" data-card-type="red">Красная</button>
+            </div>
+            <div class="card-button-row">
+                <!-- Кнопки для серых карточек мафии -->
+                <button class="card-button gray" data-card="1" data-card-type="gray">Серая</button>
+                <button class="card-button gray" data-card="2" data-card-type="gray">Серая</button>
+                <button class="card-button gray" data-card="3" data-card-type="gray">Серая</button>
+                <button class="card-button gray" data-card="4" data-card-type="gray">Серая</button>
+                <button class="card-button gray" data-card="5" data-card-type="gray">Серая</button>
+                <button class="card-button gray" data-card="6" data-card-type="gray">Серая</button>
+                <button class="card-button gray" data-card="7" data-card-type="gray">Серая</button>
+                <button class="card-button gray" data-card="8" data-card-type="gray">Серая</button>
+                <button class="card-button gray" data-card="9" data-card-type="gray">Серая</button>
+                <button class="card-button gray" data-card="10" data-card-type="gray">Серая</button>
+            </div>
+            <div class="card-button-row">
+                <!-- Кнопки для желтых карточек мафии -->
+                <button class="card-button yellow" data-card="1" data-card-type="yellow">Желтая</button>
+                <button class="card-button yellow" data-card="2" data-card-type="yellow">Желтая</button>
+                <button class="card-button yellow" data-card="3" data-card-type="yellow">Желтая</button>
+                <button class="card-button yellow" data-card="4" data-card-type="yellow">Желтая</button>
+                <button class="card-button yellow" data-card="5" data-card-type="yellow">Желтая</button>
+                <button class="card-button yellow" data-card="6" data-card-type="yellow">Желтая</button>
+                <button class="card-button yellow" data-card="7" data-card-type="yellow">Желтая</button>
+                <button class="card-button yellow" data-card="8" data-card-type="yellow">Желтая</button>
+                <button class="card-button yellow" data-card="9" data-card-type="yellow">Желтая</button>
+                <button class="card-button yellow" data-card="10" data-card-type="yellow">Желтая</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="reset-section">
+        <button class="reset-button" id="reset-button">Сбросить все</button>
+    </div>
+</div>
+    <script src="scripts/scripts.js"></script>
+
+</body>
+</html>
