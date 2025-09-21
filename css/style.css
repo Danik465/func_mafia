@@ -638,8 +638,7 @@ animation: nameMoveDown 0.5s ease-out forwards;
 
 /* ДОБАВЛЕНО: Улучшенные стили для текстовых полей ввода имен */
 .name-input-row {
-    display: grid;
-    grid-template-columns: auto 1fr;
+    display: flex;
     gap: 10px;
     align-items: center;
     padding: 10px 0px;
