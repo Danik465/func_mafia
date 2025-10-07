@@ -102,6 +102,65 @@ document.addEventListener('DOMContentLoaded', function() {
             }, i * 100);
         }
     }
+// Функция для проверки совместимости роли и цвета карточки
+function canSelectColor(cardId, color) {
+    const errorElement = document.getElementById('role-error');
+    
+    // Если выбран шериф, нельзя выбрать черную карточку
+    if (selectedRoles[cardId] === 'sheriff' && color === 'black') {
+        errorElement.textContent = 'Шериф не может быть черной картой!';
+        errorElement.style.display = 'block';
+        setTimeout(() => {
+            errorElement.style.display = 'none';
+        }, 3000);
+        return false;
+    }
+    
+    // Если выбран дон, нельзя выбрать красную карточку
+    if (selectedRoles[cardId] === 'don' && color === 'red') {
+        errorElement.textContent = 'Дон не может быть красной картой!';
+        errorElement.style.display = 'block';
+        setTimeout(() => {
+            errorElement.style.display = 'none';
+        }, 3000);
+        return false;
+    }
+    
+    errorElement.style.display = 'none';
+    return true;
+}
+
+// Функция для проверки совместимости роли и карточек мафии
+function canSelectMafiaCard(cardId, cardType) {
+    const errorElement = document.getElementById('role-error');
+    
+    // Если выбран дон, нельзя выбрать красную карточку мафии
+    if (selectedRoles[cardId] === 'don' && cardType === 'red') {
+        errorElement.textContent = 'Дон не может иметь красную карточку мафии!';
+        errorElement.style.display = 'block';
+        setTimeout(() => {
+            errorElement.style.display = 'none';
+        }, 3000);
+        return false;
+    }
+    
+    // Если выбран шериф, нельзя выбирать черные карточки мафии
+    // (серые и желтые карточки доступны для шерифа)
+    if (selectedRoles[cardId] === 'sheriff' && cardType === 'red') {
+        errorElement.textContent = 'Шериф не может иметь красную карточку мафии!';
+        errorElement.style.display = 'block';
+        setTimeout(() => {
+            errorElement.style.display = 'none';
+        }, 3000);
+        return false;
+    }
+    
+    errorElement.style.display = 'none';
+    return true;
+}
+
+
+
 
     // Функция для анимации плашки
     function animateCard(cardId) {
@@ -353,6 +412,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const cardId = this.getAttribute('data-card');
             const color = this.getAttribute('data-color');
             
+             // Проверяем совместимость роли и цвета
+            if (!canSelectColor(cardId, color)) {
+                return;
+            }
+
             // Убираем выделение с всех кнопок для этой плашки
             const allButtonsForCard = document.querySelectorAll(`.control-button[data-card="${cardId}"]`);
             allButtonsForCard.forEach(btn => btn.classList.remove('selected'));
@@ -373,10 +437,34 @@ document.addEventListener('DOMContentLoaded', function() {
             const role = this.getAttribute('data-role');
             const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
             
+            
             // Проверяем, можно ли назначить эту роль
             if (!canAssignRole(role, cardId)) {
                 return;
             }
+
+             // Проверяем совместимость с уже выбранным цветом
+            if (hasColorSelected[cardId]) {
+                if (role === 'sheriff' && selectedColors[cardId] === 'black') {
+                    document.getElementById('role-error').textContent = 'Шериф не может быть черной картой! Сначала измените цвет карты.';
+                    document.getElementById('role-error').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('role-error').style.display = 'none';
+                    }, 3000);
+                    return;
+                }
+                if (role === 'don' && selectedColors[cardId] === 'red') {
+                    document.getElementById('role-error').textContent = 'Дон не может быть красной картой! Сначала измените цвет карты.';
+                    document.getElementById('role-error').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('role-error').style.display = 'none';
+                    }, 3000);
+                    return;
+                }
+            }
+
+
+
             
             // Убираем выделение с всех кнопок ролей для этой плашки
             const allRoleButtonsForCard = document.querySelectorAll(`.role-button[data-card="${cardId}"]`);
@@ -517,6 +605,12 @@ statusButtons.forEach(button => {
                 return;
             }
             
+                    // Проверяем совместимость роли и карточки мафии
+            if (!canSelectMafiaCard(cardId, cardType)) {
+                return;
+            }
+
+
             // Переключаем состояние карточки
             selectedMafiaCards[cardId][cardType] = !selectedMafiaCards[cardId][cardType];
             
