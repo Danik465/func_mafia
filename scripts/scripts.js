@@ -130,34 +130,7 @@ function canSelectColor(cardId, color) {
     return true;
 }
 
-// Функция для проверки совместимости роли и карточек мафии
-function canSelectMafiaCard(cardId, cardType) {
-    const errorElement = document.getElementById('role-error');
-    
-    // Если выбран дон, нельзя выбрать красную карточку мафии
-    if (selectedRoles[cardId] === 'don' && cardType === 'red') {
-        errorElement.textContent = 'Дон не может иметь красную карточку мафии!';
-        errorElement.style.display = 'block';
-        setTimeout(() => {
-            errorElement.style.display = 'none';
-        }, 3000);
-        return false;
-    }
-    
-    // Если выбран шериф, нельзя выбирать черные карточки мафии
-    // (серые и желтые карточки доступны для шерифа)
-    if (selectedRoles[cardId] === 'sheriff' && cardType === 'red') {
-        errorElement.textContent = 'Шериф не может иметь красную карточку мафии!';
-        errorElement.style.display = 'block';
-        setTimeout(() => {
-            errorElement.style.display = 'none';
-        }, 3000);
-        return false;
-    }
-    
-    errorElement.style.display = 'none';
-    return true;
-}
+
 
 
 
@@ -605,10 +578,7 @@ statusButtons.forEach(button => {
                 return;
             }
             
-                    // Проверяем совместимость роли и карточки мафии
-            if (!canSelectMafiaCard(cardId, cardType)) {
-                return;
-            }
+
 
 
             // Переключаем состояние карточки
