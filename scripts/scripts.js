@@ -603,6 +603,143 @@ statusButtons.forEach(button => {
         });
     });
 
+// Глобальные функции для overlay.html
+window.setPlayerName = function(cardId, name) {
+    const nameElement = nameElements[cardId];
+    if (nameElement) {
+        if (name) {
+            nameElement.textContent = name;
+            nameElement.style.display = 'block';
+            nameElement.classList.add('animate');
+        } else {
+            nameElement.textContent = '';
+            nameElement.style.display = 'none';
+        }
+        animateCard(cardId);
+    }
+};
+
+window.setCardColor = function(cardId, color) {
+    const card = document.getElementById(`card-${cardId}`);
+    const defaultImage = card.querySelector('.default-image');
+    const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
+
+    if (color === 'red') {
+        defaultImage.src = mafiaCardImages.redCard;
+        blackCardIcon.style.display = 'none';
+    } else if (color === 'black') {
+        defaultImage.src = mafiaCardImages.blackCard;
+        if (selectedRoles[cardId] !== 'don') {
+            blackCardIcon.style.display = 'block';
+            animateBlackCardIcon(cardId);
+        }
+    }
+
+    defaultImage.style.display = 'block';
+    hasColorSelected[cardId] = true;
+    selectedColors[cardId] = color;
+    
+    if (selectedRoles[cardId]) {
+        showRoleIcon(cardId, selectedRoles[cardId]);
+    }
+
+    animateCard(cardId);
+};
+
+window.setCardRole = function(cardId, role) {
+    const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
+    
+    // Убираем предыдущую роль
+    if (selectedRoles[cardId]) {
+        const previousRole = selectedRoles[cardId];
+        if (previousRole === 'sheriff') sheriffCount--;
+        else if (previousRole === 'don') donCount--;
+    }
+    
+    // Сохраняем новую роль
+    selectedRoles[cardId] = role;
+    updateRoleCounters();
+    
+    // Показываем/скрываем иконки
+    if (role === 'don') {
+        blackCardIcon.style.display = 'none';
+    } else if (hasColorSelected[cardId] && selectedColors[cardId] === 'black') {
+        blackCardIcon.style.display = 'block';
+        animateBlackCardIcon(cardId);
+    }
+    
+    // Показываем иконку роли
+    if (hasColorSelected[cardId]) {
+        showRoleIcon(cardId, role);
+    }
+};
+
+window.setCardStatus = function(cardId, status) {
+    const card = document.getElementById(`card-${cardId}`);
+    const statusIcon = document.getElementById(`status-icon-${cardId}`);
+    const nameElement = nameElements[cardId];
+    const roleIcon = document.getElementById(`role-icon-${cardId}`);
+    const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
+    
+    // Сохраняем текущее состояние видимости иконки черной карты
+    const wasBlackCardIconVisible = blackCardIcon.style.display === 'block';
+    
+    // Устанавливаем статус
+    card.classList.remove('voted', 'shot', 'removed');
+    nameElement.classList.remove('voted', 'shot', 'removed');
+    if (roleIcon.style.display === 'block') {
+        roleIcon.classList.remove('voted', 'shot', 'removed');
+    }
+    
+    if (status === 'voted') {
+        card.classList.add('voted');
+        nameElement.classList.add('voted');
+        if (roleIcon.style.display === 'block') roleIcon.classList.add('voted');
+    } else if (status === 'shot') {
+        card.classList.add('shot');
+        nameElement.classList.add('shot');
+        if (roleIcon.style.display === 'block') roleIcon.classList.add('shot');
+    } else if (status === 'removed') {
+        card.classList.add('removed');
+        nameElement.classList.add('removed');
+        if (roleIcon.style.display === 'block') roleIcon.classList.add('removed');
+    }
+    
+    // Устанавливаем иконку статуса
+    statusIcon.src = statusIcons[status];
+    statusIcon.style.display = 'block';
+    
+    // Восстанавливаем иконку черной карты
+    if (wasBlackCardIconVisible) {
+        blackCardIcon.style.display = 'block';
+        blackCardIcon.classList.remove('voted', 'shot', 'removed');
+        blackCardIcon.classList.add(status);
+    }
+};
+
+window.setMafiaCard = function(cardId, cardType, visible) {
+    const mafiaCard = document.getElementById(`mafia-card-${cardType}-${cardId}`);
+    if (mafiaCard) {
+        if (visible) {
+            mafiaCard.style.display = 'block';
+            mafiaCard.classList.add('animate');
+        } else {
+            mafiaCard.style.display = 'none';
+        }
+        selectedMafiaCards[cardId][cardType] = visible;
+    }
+};
+
+window.resetSingleCard = resetSingleCard;
+
+// Сделаем некоторые переменные глобальными для доступа
+window.nameElements = nameElements;
+window.selectedRoles = selectedRoles;
+window.selectedColors = selectedColors;
+window.hasColorSelected = hasColorSelected;
+
+
+
     // Добавляем обработчики для кнопок сброса отдельных плашек
     const resetCardButtons = document.querySelectorAll('.reset-card-button');
 
