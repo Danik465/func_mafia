@@ -1,9 +1,46 @@
+// ДОБАВЬТЕ этот код в начало server.js, перед созданием express приложения
+const { exec } = require('child_process');
+
+function killPort(port) {
+  const platform = process.platform;
+  let command = '';
+  
+  if (platform === 'win32') {
+    command = `netstat -ano | findstr :${port} | findstr LISTENING`;
+    exec(command, (err, stdout) => {
+      if (stdout) {
+        const pid = stdout.split('\n')[0].split(/\s+/).pop();
+        exec(`taskkill /F /PID ${pid}`, (err) => {
+          if (!err) {
+            console.log(`✅ Освобожден порт ${port} (PID: ${pid})`);
+          }
+        });
+      }
+    });
+  } else {
+    command = `lsof -i :${port} | grep LISTEN | awk '{print $2}'`;
+    exec(command, (err, stdout) => {
+      if (stdout) {
+        const pid = stdout.trim();
+        exec(`kill -9 ${pid}`, (err) => {
+          if (!err) {
+            console.log(`✅ Освобожден порт ${port} (PID: ${pid})`);
+          }
+        });
+      }
+    });
+  }
+}
+
+// Освобождаем порт перед запуском сервера
+killPort(8000);
+
 const express = require("express");
 const { WebSocketServer } = require("ws");
 const path = require("path");
 
 const app = express();
-const PORT = 8080;
+const PORT = 8000;
 const AUTH_TOKEN = "123"; // Пароль для управления
 
 // В server.js заменить существующие маршруты на:

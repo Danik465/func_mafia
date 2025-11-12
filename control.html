@@ -7,437 +7,526 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-     <div class="container">   
-    <div class="control-panel">
-        <h2>Панель управления</h2>
+    <div class="container">   
+        <div class="control-panel">
+            <h2>Панель управления</h2>
 
-        <div class="name-select-container">
-            <h3>Выбор имен для плашек</h3>
-             <div class="name-input-row">
-        <!-- Текстовые поля для ввода имен -->
-        <span class="name-input-label">1:</span>
-        <input type="text" class="name-input" data-card="1" placeholder="Введите имя">
+            <!-- ДОБАВЛЕНО: Блок для отображения ошибок -->
+            <div class="error-message" id="role-error" style="display: none; background: #ffebee; color: #c62828; padding: 10px; border-radius: 4px; margin: 10px 0; border: 1px solid #ffcdd2;"></div>
 
-        <span class="name-input-label">2:</span>
-        <input type="text" class="name-input" data-card="2" placeholder="Введите имя">
+            <div class="name-select-container">
+                <h3>Выбор имен для плашек</h3>
+                <div class="name-input-row">
+                    <!-- Текстовые поля для ввода имен -->
+                    <span class="name-input-label">1:</span>
+                    <input type="text" class="name-input" data-card="1" placeholder="Введите имя">
 
-        <span class="name-input-label">3:</span>
-        <input type="text" class="name-input" data-card="3" placeholder="Введите имя">
+                    <span class="name-input-label">2:</span>
+                    <input type="text" class="name-input" data-card="2" placeholder="Введите имя">
 
-        <span class="name-input-label">4:</span>
-        <input type="text" class="name-input" data-card="4" placeholder="Введите имя">
+                    <span class="name-input-label">3:</span>
+                    <input type="text" class="name-input" data-card="3" placeholder="Введите имя">
 
-        <span class="name-input-label">5:</span>
-        <input type="text" class="name-input" data-card="5" placeholder="Введите имя">
+                    <span class="name-input-label">4:</span>
+                    <input type="text" class="name-input" data-card="4" placeholder="Введите имя">
 
-        <span class="name-input-label">6:</span>
-        <input type="text" class="name-input" data-card="6" placeholder="Введите имя">
+                    <span class="name-input-label">5:</span>
+                    <input type="text" class="name-input" data-card="5" placeholder="Введите имя">
 
-        <span class="name-input-label">7:</span>
-        <input type="text" class="name-input" data-card="7" placeholder="Введите имя">
+                    <span class="name-input-label">6:</span>
+                    <input type="text" class="name-input" data-card="6" placeholder="Введите имя">
 
-        <span class="name-input-label">8:</span>
-        <input type="text" class="name-input" data-card="8" placeholder="Введите имя">
+                    <span class="name-input-label">7:</span>
+                    <input type="text" class="name-input" data-card="7" placeholder="Введите имя">
 
-        <span class="name-input-label">9:</span>
-        <input type="text" class="name-input" data-card="9" placeholder="Введите имя">
+                    <span class="name-input-label">8:</span>
+                    <input type="text" class="name-input" data-card="8" placeholder="Введите имя">
 
-        <span class="name-input-label">10:</span>
-        <input type="text" class="name-input" data-card="10" placeholder="Введите имя">
+                    <span class="name-input-label">9:</span>
+                    <input type="text" class="name-input" data-card="9" placeholder="Введите имя">
+
+                    <span class="name-input-label">10:</span>
+                    <input type="text" class="name-input" data-card="10" placeholder="Введите имя">
+                </div>
+            </div>
+
+            <div class="button-rows">
+                <div class="button-row">
+                    <!-- Кнопки для выбора красного цвета -->
+                    <button class="control-button red-button" data-card="1" data-color="red"></button>
+                    <button class="control-button red-button" data-card="2" data-color="red"></button>
+                    <button class="control-button red-button" data-card="3" data-color="red"></button>
+                    <button class="control-button red-button" data-card="4" data-color="red"></button>
+                    <button class="control-button red-button" data-card="5" data-color="red"></button>
+                    <button class="control-button red-button" data-card="6" data-color="red"></button>
+                    <button class="control-button red-button" data-card="7" data-color="red"></button>
+                    <button class="control-button red-button" data-card="8" data-color="red"></button>
+                    <button class="control-button red-button" data-card="9" data-color="red"></button>
+                    <button class="control-button red-button" data-card="10" data-color="red"></button>
+                </div>
+                <div class="button-row">
+                    <!-- Кнопки для выбора черного цвета -->
+                    <button class="control-button black-button" data-card="1" data-color="black"></button>
+                    <button class="control-button black-button" data-card="2" data-color="black"></button>
+                    <button class="control-button black-button" data-card="3" data-color="black"></button>
+                    <button class="control-button black-button" data-card="4" data-color="black"></button>
+                    <button class="control-button black-button" data-card="5" data-color="black"></button>
+                    <button class="control-button black-button" data-card="6" data-color="black"></button>
+                    <button class="control-button black-button" data-card="7" data-color="black"></button>
+                    <button class="control-button black-button" data-card="8" data-color="black"></button>
+                    <button class="control-button black-button" data-card="9" data-color="black"></button>
+                    <button class="control-button black-button" data-card="10" data-color="black"></button>
+                </div>
+            </div>
+
+            <div class="role-buttons-container">
+                <h3>Выбор ролей</h3>
+                <div class="role-button-row">
+                    <!-- Кнопки для выбора шерифа -->
+                    <button class="role-button sheriff" data-card="1" data-role="sheriff">Шериф</button>
+                    <button class="role-button sheriff" data-card="2" data-role="sheriff">Шериф</button>
+                    <button class="role-button sheriff" data-card="3" data-role="sheriff">Шериф</button>
+                    <button class="role-button sheriff" data-card="4" data-role="sheriff">Шериф</button>
+                    <button class="role-button sheriff" data-card="5" data-role="sheriff">Шериф</button>
+                    <button class="role-button sheriff" data-card="6" data-role="sheriff">Шериф</button>
+                    <button class="role-button sheriff" data-card="7" data-role="sheriff">Шериф</button>
+                    <button class="role-button sheriff" data-card="8" data-role="sheriff">Шериф</button>
+                    <button class="role-button sheriff" data-card="9" data-role="sheriff">Шериф</button>
+                    <button class="role-button sheriff" data-card="10" data-role="sheriff">Шериф</button>
+                </div>
+                <div class="role-button-row">
+                    <!-- Кнопки для выбора дона -->
+                    <button class="role-button don" data-card="1" data-role="don">Дон</button>
+                    <button class="role-button don" data-card="2" data-role="don">Дон</button>
+                    <button class="role-button don" data-card="3" data-role="don">Дон</button>
+                    <button class="role-button don" data-card="4" data-role="don">Дон</button>
+                    <button class="role-button don" data-card="5" data-role="don">Дон</button>
+                    <button class="role-button don" data-card="6" data-role="don">Дон</button>
+                    <button class="role-button don" data-card="7" data-role="don">Дон</button>
+                    <button class="role-button don" data-card="8" data-role="don">Дон</button>
+                    <button class="role-button don" data-card="9" data-role="don">Дон</button>
+                    <button class="role-button don" data-card="10" data-role="don">Дон</button>
+                </div>
+            </div>
+
+            <div class="status-buttons-container">
+                <h3>Действия с плашками</h3>
+                <div class="status-button-row">
+                    <!-- Кнопки для отметки "Заголосован" -->
+                    <button class="status-button voted" data-card="1" data-status="voted">Заголосован</button>
+                    <button class="status-button voted" data-card="2" data-status="voted">Заголосован</button>
+                    <button class="status-button voted" data-card="3" data-status="voted">Заголосован</button>
+                    <button class="status-button voted" data-card="4" data-status="voted">Заголосован</button>
+                    <button class="status-button voted" data-card="5" data-status="voted">Заголосован</button>
+                    <button class="status-button voted" data-card="6" data-status="voted">Заголосован</button>
+                    <button class="status-button voted" data-card="7" data-status="voted">Заголосован</button>
+                    <button class="status-button voted" data-card="8" data-status="voted">Заголосован</button>
+                    <button class="status-button voted" data-card="9" data-status="voted">Заголосован</button>
+                    <button class="status-button voted" data-card="10" data-status="voted">Заголосован</button>
+                </div>
+                <div class="status-button-row">
+                    <!-- Кнопки для отметки "Отстрел" -->
+                    <button class="status-button shot" data-card="1" data-status="shot">Отстрел</button>
+                    <button class="status-button shot" data-card="2" data-status="shot">Отстрел</button>
+                    <button class="status-button shot" data-card="3" data-status="shot">Отстрел</button>
+                    <button class="status-button shot" data-card="4" data-status="shot">Отстрел</button>
+                    <button class="status-button shot" data-card="5" data-status="shot">Отстрел</button>
+                    <button class="status-button shot" data-card="6" data-status="shot">Отстрел</button>
+                    <button class="status-button shot" data-card="7" data-status="shot">Отстрел</button>
+                    <button class="status-button shot" data-card="8" data-status="shot">Отстрел</button>
+                    <button class="status-button shot" data-card="9" data-status="shot">Отстрел</button>
+                    <button class="status-button shot" data-card="10" data-status="shot">Отстрел</button>
+                </div>
+                <div class="status-button-row">
+                    <!-- Кнопки для отметки "Удален" -->
+                    <button class="status-button removed" data-card="1" data-status="removed">Удален</button>
+                    <button class="status-button removed" data-card="2" data-status="removed">Удален</button>
+                    <button class="status-button removed" data-card="3" data-status="removed">Удален</button>
+                    <button class="status-button removed" data-card="4" data-status="removed">Удален</button>
+                    <button class="status-button removed" data-card="5" data-status="removed">Удален</button>
+                    <button class="status-button removed" data-card="6" data-status="removed">Удален</button>
+                    <button class="status-button removed" data-card="7" data-status="removed">Удален</button>
+                    <button class="status-button removed" data-card="8" data-status="removed">Удален</button>
+                    <button class="status-button removed" data-card="9" data-status="removed">Удален</button>
+                    <button class="status-button removed" data-card="10" data-status="removed">Удален</button>
+                </div>
+            </div>
+
+            <div class="reset-cards-container">
+                <h3>Сброс отдельных плашек</h3>
+                <div class="reset-card-button-row">
+                    <button class="reset-card-button" data-card="1">Сбросить 1</button>
+                    <button class="reset-card-button" data-card="2">Сбросить 2</button>
+                    <button class="reset-card-button" data-card="3">Сбросить 3</button>
+                    <button class="reset-card-button" data-card="4">Сбросить 4</button>
+                    <button class="reset-card-button" data-card="5">Сбросить 5</button>
+                    <button class="reset-card-button" data-card="6">Сбросить 6</button>
+                    <button class="reset-card-button" data-card="7">Сбросить 7</button>
+                    <button class="reset-card-button" data-card="8">Сбросить 8</button>
+                    <button class="reset-card-button" data-card="9">Сбросить 9</button>
+                    <button class="reset-card-button" data-card="10">Сбросить 10</button>
+                </div>
+            </div>
+
+            <div class="card-buttons-container">
+                <h3>Карточки мафии</h3>
+                <div class="card-button-row">
+                    <!-- Кнопки для красных карточек мафии -->
+                    <button class="card-button red" data-card="1" data-card-type="red">Красная</button>
+                    <button class="card-button red" data-card="2" data-card-type="red">Красная</button>
+                    <button class="card-button red" data-card="3" data-card-type="red">Красная</button>
+                    <button class="card-button red" data-card="4" data-card-type="red">Красная</button>
+                    <button class="card-button red" data-card="5" data-card-type="red">Красная</button>
+                    <button class="card-button red" data-card="6" data-card-type="red">Красная</button>
+                    <button class="card-button red" data-card="7" data-card-type="red">Красная</button>
+                    <button class="card-button red" data-card="8" data-card-type="red">Красная</button>
+                    <button class="card-button red" data-card="9" data-card-type="red">Красная</button>
+                    <button class="card-button red" data-card="10" data-card-type="red">Красная</button>
+                </div>
+                <div class="card-button-row">
+                    <!-- Кнопки для серых карточек мафии -->
+                    <button class="card-button gray" data-card="1" data-card-type="gray">Серая</button>
+                    <button class="card-button gray" data-card="2" data-card-type="gray">Серая</button>
+                    <button class="card-button gray" data-card="3" data-card-type="gray">Серая</button>
+                    <button class="card-button gray" data-card="4" data-card-type="gray">Серая</button>
+                    <button class="card-button gray" data-card="5" data-card-type="gray">Серая</button>
+                    <button class="card-button gray" data-card="6" data-card-type="gray">Серая</button>
+                    <button class="card-button gray" data-card="7" data-card-type="gray">Серая</button>
+                    <button class="card-button gray" data-card="8" data-card-type="gray">Серая</button>
+                    <button class="card-button gray" data-card="9" data-card-type="gray">Серая</button>
+                    <button class="card-button gray" data-card="10" data-card-type="gray">Серая</button>
+                </div>
+                <div class="card-button-row">
+                    <!-- Кнопки для желтых карточек мафии -->
+                    <button class="card-button yellow" data-card="1" data-card-type="yellow">Желтая</button>
+                    <button class="card-button yellow" data-card="2" data-card-type="yellow">Желтая</button>
+                    <button class="card-button yellow" data-card="3" data-card-type="yellow">Желтая</button>
+                    <button class="card-button yellow" data-card="4" data-card-type="yellow">Желтая</button>
+                    <button class="card-button yellow" data-card="5" data-card-type="yellow">Желтая</button>
+                    <button class="card-button yellow" data-card="6" data-card-type="yellow">Желтая</button>
+                    <button class="card-button yellow" data-card="7" data-card-type="yellow">Желтая</button>
+                    <button class="card-button yellow" data-card="8" data-card-type="yellow">Желтая</button>
+                    <button class="card-button yellow" data-card="9" data-card-type="yellow">Желтая</button>
+                    <button class="card-button yellow" data-card="10" data-card-type="yellow">Желтая</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="reset-section">
+            <button class="reset-button" id="reset-button">Сбросить все</button>
+        </div>
     </div>
-</div>
-        </div>
 
-        <div class="button-rows">
-            <div class="button-row">
-                <!-- Кнопки для выбора красного цвета -->
-                <button class="control-button red-button" data-card="1" data-color="red"></button>
-                <button class="control-button red-button" data-card="2" data-color="red"></button>
-                <button class="control-button red-button" data-card="3" data-color="red"></button>
-                <button class="control-button red-button" data-card="4" data-color="red"></button>
-                <button class="control-button red-button" data-card="5" data-color="red"></button>
-                <button class="control-button red-button" data-card="6" data-color="red"></button>
-                <button class="control-button red-button" data-card="7" data-color="red"></button>
-                <button class="control-button red-button" data-card="8" data-color="red"></button>
-                <button class="control-button red-button" data-card="9" data-color="red"></button>
-                <button class="control-button red-button" data-card="10" data-color="red"></button>
-            </div>
-            <div class="button-row">
-                <!-- Кнопки для выбора черного цвета -->
-                <button class="control-button black-button" data-card="1" data-color="black"></button>
-                <button class="control-button black-button" data-card="2" data-color="black"></button>
-                <button class="control-button black-button" data-card="3" data-color="black"></button>
-                <button class="control-button black-button" data-card="4" data-color="black"></button>
-                <button class="control-button black-button" data-card="5" data-color="black"></button>
-                <button class="control-button black-button" data-card="6" data-color="black"></button>
-                <button class="control-button black-button" data-card="7" data-color="black"></button>
-                <button class="control-button black-button" data-card="8" data-color="black"></button>
-                <button class="control-button black-button" data-card="9" data-color="black"></button>
-                <button class="control-button black-button" data-card="10" data-color="black"></button>
-            </div>
-        </div>
-
-        <div class="role-buttons-container">
-            <h3>Выбор ролей</h3>
-            <div class="role-button-row">
-                <!-- Кнопки для выбора шерифа -->
-                <button class="role-button sheriff" data-card="1" data-role="sheriff">Шериф</button>
-                <button class="role-button sheriff" data-card="2" data-role="sheriff">Шериф</button>
-                <button class="role-button sheriff" data-card="3" data-role="sheriff">Шериф</button>
-                <button class="role-button sheriff" data-card="4" data-role="sheriff">Шериф</button>
-                <button class="role-button sheriff" data-card="5" data-role="sheriff">Шериф</button>
-                <button class="role-button sheriff" data-card="6" data-role="sheriff">Шериф</button>
-                <button class="role-button sheriff" data-card="7" data-role="sheriff">Шериф</button>
-                <button class="role-button sheriff" data-card="8" data-role="sheriff">Шериф</button>
-                <button class="role-button sheriff" data-card="9" data-role="sheriff">Шериф</button>
-                <button class="role-button sheriff" data-card="10" data-role="sheriff">Шериф</button>
-            </div>
-            <div class="role-button-row">
-                <!-- Кнопки для выбора дона -->
-                <button class="role-button don" data-card="1" data-role="don">Дон</button>
-                <button class="role-button don" data-card="2" data-role="don">Дон</button>
-                <button class="role-button don" data-card="3" data-role="don">Дон</button>
-                <button class="role-button don" data-card="4" data-role="don">Дон</button>
-                <button class="role-button don" data-card="5" data-role="don">Дон</button>
-                <button class="role-button don" data-card="6" data-role="don">Дон</button>
-                <button class="role-button don" data-card="7" data-role="don">Дон</button>
-                <button class="role-button don" data-card="8" data-role="don">Дон</button>
-                <button class="role-button don" data-card="9" data-role="don">Дон</button>
-                <button class="role-button don" data-card="10" data-role="don">Дон</button>
-            </div>
-        </div>
-
-        <div class="status-buttons-container">
-            <h3>Действия с плашками</h3>
-            <div class="status-button-row">
-                <!-- Кнопки для отметки "Заголосован" -->
-                <button class="status-button voted" data-card="1" data-status="voted">Заголосован</button>
-                <button class="status-button voted" data-card="2" data-status="voted">Заголосован</button>
-                <button class="status-button voted" data-card="3" data-status="voted">Заголосован</button>
-                <button class="status-button voted" data-card="4" data-status="voted">Заголосован</button>
-                <button class="status-button voted" data-card="5" data-status="voted">Заголосован</button>
-                <button class="status-button voted" data-card="6" data-status="voted">Заголосован</button>
-                <button class="status-button voted" data-card="7" data-status="voted">Заголосован</button>
-                <button class="status-button voted" data-card="8" data-status="voted">Заголосован</button>
-                <button class="status-button voted" data-card="9" data-status="voted">Заголосован</button>
-                <button class="status-button voted" data-card="10" data-status="voted">Заголосован</button>
-            </div>
-            <div class="status-button-row">
-                <!-- Кнопки для отметки "Отстрел" -->
-                <button class="status-button shot" data-card="1" data-status="shot">Отстрел</button>
-                <button class="status-button shot" data-card="2" data-status="shot">Отстрел</button>
-                <button class="status-button shot" data-card="3" data-status="shot">Отстрел</option>
-                <button class="status-button shot" data-card="4" data-status="shot">Отстрел</button>
-                <button class="status-button shot" data-card="5" data-status="shot">Отстрел</button>
-                <button class="status-button shot" data-card="6" data-status="shot">Отстрел</button>
-                <button class="status-button shot" data-card="7" data-status="shot">Отстрел</button>
-                <button class="status-button shot" data-card="8" data-status="shot">Отстрел</button>
-                <button class="status-button shot" data-card="9" data-status="shot">Отстрел</button>
-                <button class="status-button shot" data-card="10" data-status="shot">Отстрел</button>
-            </div>
-             <div class="status-button-row">
-    <!-- Кнопки для отметки "Удален" -->
-                <button class="status-button removed" data-card="1" data-status="removed">Удален</button>
-                <button class="status-button removed" data-card="2" data-status="removed">Удален</button>
-                <button class="status-button removed" data-card="3" data-status="removed">Удален</button>
-                <button class="status-button removed" data-card="4" data-status="removed">Удален</button>
-                <button class="status-button removed" data-card="5" data-status="removed">Удален</button>
-                <button class="status-button removed" data-card="6" data-status="removed">Удален</button>
-                <button class="status-button removed" data-card="7" data-status="removed">Удален</button>
-                <button class="status-button removed" data-card="8" data-status="removed">Удален</button>
-                <button class="status-button removed" data-card="9" data-status="removed">Удален</button>
-                <button class="status-button removed" data-card="10" data-status="removed">Удален</button>
-            </div>
-        </div>
-
-         <div class="reset-cards-container">
-            <h3>Сброс отдельных плашек</h3>
-            <div class="reset-card-button-row">
-                <button class="reset-card-button" data-card="1">Сбросить 1</button>
-                <button class="reset-card-button" data-card="2">Сбросить 2</button>
-                <button class="reset-card-button" data-card="3">Сбросить 3</button>
-                <button class="reset-card-button" data-card="4">Сбросить 4</button>
-                <button class="reset-card-button" data-card="5">Сбросить 5</button>
-                <button class="reset-card-button" data-card="6">Сбросить 6</button>
-                <button class="reset-card-button" data-card="7">Сбросить 7</button>
-                <button class="reset-card-button" data-card="8">Сбросить 8</button>
-                <button class="reset-card-button" data-card="9">Сбросить 9</button>
-                <button class="reset-card-button" data-card="10">Сбросить 10</button>
-            </div>
-        </div>
-
-        <div class="card-buttons-container">
-            <h3>Карточки мафии</h3>
-            <div class="card-button-row">
-                <!-- Кнопки для красных карточек мафии -->
-                <button class="card-button red" data-card="1" data-card-type="red">Красная</button>
-                <button class="card-button red" data-card="2" data-card-type="red">Красная</button>
-                <button class="card-button red" data-card="3" data-card-type="red">Красная</button>
-                <button class="card-button red" data-card="4" data-card-type="red">Красная</button>
-                <button class="card-button red" data-card="5" data-card-type="red">Красная</button>
-                <button class="card-button red" data-card="6" data-card-type="red">Красная</button>
-                <button class="card-button red" data-card="7" data-card-type="red">Красная</button>
-                <button class="card-button red" data-card="8" data-card-type="red">Красная</button>
-                <button class="card-button red" data-card="9" data-card-type="red">Красная</button>
-                <button class="card-button red" data-card="10" data-card-type="red">Красная</button>
-            </div>
-            <div class="card-button-row">
-                <!-- Кнопки для серых карточек мафии -->
-                <button class="card-button gray" data-card="1" data-card-type="gray">Серая</button>
-                <button class="card-button gray" data-card="2" data-card-type="gray">Серая</button>
-                <button class="card-button gray" data-card="3" data-card-type="gray">Серая</button>
-                <button class="card-button gray" data-card="4" data-card-type="gray">Серая</button>
-                <button class="card-button gray" data-card="5" data-card-type="gray">Серая</button>
-                <button class="card-button gray" data-card="6" data-card-type="gray">Серая</button>
-                <button class="card-button gray" data-card="7" data-card-type="gray">Серая</button>
-                <button class="card-button gray" data-card="8" data-card-type="gray">Серая</button>
-                <button class="card-button gray" data-card="9" data-card-type="gray">Серая</button>
-                <button class="card-button gray" data-card="10" data-card-type="gray">Серая</button>
-            </div>
-            <div class="card-button-row">
-                <!-- Кнопки для желтых карточек мафии -->
-                <button class="card-button yellow" data-card="1" data-card-type="yellow">Желтая</button>
-                <button class="card-button yellow" data-card="2" data-card-type="yellow">Желтая</button>
-                <button class="card-button yellow" data-card="3" data-card-type="yellow">Желтая</button>
-                <button class="card-button yellow" data-card="4" data-card-type="yellow">Желтая</button>
-                <button class="card-button yellow" data-card="5" data-card-type="yellow">Желтая</button>
-                <button class="card-button yellow" data-card="6" data-card-type="yellow">Желтая</button>
-                <button class="card-button yellow" data-card="7" data-card-type="yellow">Желтая</button>
-                <button class="card-button yellow" data-card="8" data-card-type="yellow">Желтая</button>
-                <button class="card-button yellow" data-card="9" data-card-type="yellow">Желтая</button>
-                <button class="card-button yellow" data-card="10" data-card-type="yellow">Желтая</button>
-            </div>
-        </div>
+    <!-- ДОБАВЛЕНО: Секция авторизации -->
+    <div class="auth-section" style="background: #e8f4fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 2px solid #3498db;">
+        <h3>Подключение к серверу</h3>
+        <input id="token" type="password" placeholder="Токен авторизации" style="padding: 8px 12px; border: 1px solid #3498db; border-radius: 4px; margin-right: 10px; width: 200px;">
+        <button onclick="connect()" style="background: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Подключиться</button>
+        <span id="status" class="status-indicator status-disconnected" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; background: #e74c3c;"></span>
+        <span id="status-text">Не подключено</span>
     </div>
-
-    <div class="reset-section">
-        <button class="reset-button" id="reset-button">Сбросить все</button>
-    </div>
-</div>
-<!-- Добавьте эту секцию авторизации в control.html -->
-<div class="auth-section" style="background: #e8f4fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 2px solid #3498db;">
-  <h3>Подключение к серверу</h3>
-  <input id="token" type="password" placeholder="Токен авторизации" style="padding: 8px 12px; border: 1px solid #3498db; border-radius: 4px; margin-right: 10px; width: 200px;">
-  <button onclick="connect()" style="background: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Подключиться</button>
-  <span id="status" class="status-indicator status-disconnected" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; background: #e74c3c;"></span>
-  <span id="status-text">Не подключено</span>
-</div>
-
-
-
 
     <script src="scripts/scripts.js"></script>
-    <script>     let ws;
-    let isAuthorized = false;
+    <script>
+        let ws;
+        let isAuthorized = false;
 
-    // Автоматически определяет адрес WebSocket
-    const proto = location.protocol === "https:" ? "wss:" : "ws:";
-    const WS_URL = proto + "//" + location.host;
+        // Автоматически определяет адрес WebSocket
+        const proto = location.protocol === "https:" ? "wss:" : "ws:";
+        const WS_URL = proto + "//" + location.host;
 
-    function connect() {
-      ws = new WebSocket(WS_URL);
-      
-      ws.onopen = () => {
-        const token = document.getElementById('token').value;
-        ws.send(JSON.stringify({ type: "auth", token }));
-        updateStatus('connecting', 'Подключается...');
-      };
+        function connect() {
+            ws = new WebSocket(WS_URL);
+            
+            ws.onopen = () => {
+                const token = document.getElementById('token').value;
+                ws.send(JSON.stringify({ type: "auth", token }));
+                updateStatus('connecting', 'Подключается...');
+            };
 
-      ws.onmessage = (e) => {
-        const data = JSON.parse(e.data);
-        
-        if (data.type === "auth_ok") {
-          isAuthorized = true;
-          updateStatus('connected', 'Подключено');
-          initializeControls();
-        } else if (data.type === "auth_fail") {
-          isAuthorized = false;
-          updateStatus('error', 'Ошибка авторизации');
-          alert("Неверный токен!");
-        } else if (data.type === "initial_state") {
-          // Восстанавливаем состояние из сервера
-          restoreState(data.state);
+            ws.onmessage = (e) => {
+                const data = JSON.parse(e.data);
+                
+                if (data.type === "auth_ok") {
+                    isAuthorized = true;
+                    updateStatus('connected', 'Подключено');
+                    initializeControls();
+                } else if (data.type === "auth_fail") {
+                    isAuthorized = false;
+                    updateStatus('error', 'Ошибка авторизации');
+                    alert("Неверный токен!");
+                } else if (data.type === "initial_state") {
+                    // Восстанавливаем состояние из сервера
+                    restoreState(data.state);
+                }
+            };
+
+            ws.onclose = () => {
+                isAuthorized = false;
+                updateStatus('disconnected', 'Не подключено');
+            };
+
+            ws.onerror = () => {
+                updateStatus('error', 'Ошибка подключения');
+            };
         }
-      };
 
-      ws.onclose = () => {
-        isAuthorized = false;
-        updateStatus('disconnected', 'Не подключено');
-      };
+        function updateStatus(status, text) {
+            const indicator = document.getElementById('status');
+            const statusText = document.getElementById('status-text');
+            
+            // Обновляем цвета статуса
+            const statusColors = {
+                connected: '#2ecc71',
+                disconnected: '#e74c3c',
+                error: '#e74c3c',
+                connecting: '#f39c12'
+            };
+            indicator.style.background = statusColors[status] || '#e74c3c';
+            statusText.textContent = text;
+        }
 
-      ws.onerror = () => {
-        updateStatus('error', 'Ошибка подключения');
-      };
-    }
-
-    function updateStatus(status, text) {
-      const indicator = document.getElementById('status');
-      const statusText = document.getElementById('status-text');
-      
-      indicator.className = 'status-indicator status-' + status;
-      statusText.textContent = text;
-      
-      // Обновляем цвета статуса
-      const statusColors = {
-        connected: '#2ecc71',
-        disconnected: '#e74c3c',
-        error: '#e74c3c',
-        connecting: '#f39c12'
-      };
-      indicator.style.background = statusColors[status] || '#e74c3c';
-    }
-
-    function restoreState(state) {
-      // Восстанавливаем состояние всех плашек из сервера
-      for (let cardId in state) {
-        const cardState = state[cardId];
-        
-        // Восстанавливаем имя
-        const nameInput = document.querySelector(`.name-input[data-card="${cardId}"]`);
-        if (nameInput && cardState.name) {
-          nameInput.value = cardState.name;
-        }
-        
-        // Восстанавливаем цвет
-        if (cardState.color !== "default") {
-          const colorButton = document.querySelector(`.control-button[data-card="${cardId}"][data-color="${cardState.color}"]`);
-          if (colorButton) {
-            colorButton.click();
-          }
-        }
-        
-        // Восстанавливаем роль
-        if (cardState.role) {
-          const roleButton = document.querySelector(`.role-button[data-card="${cardId}"][data-role="${cardState.role}"]`);
-          if (roleButton) {
-            roleButton.click();
-          }
-        }
-        
-        // Восстанавливаем статус
-        if (cardState.status) {
-          const statusButton = document.querySelector(`.status-button[data-card="${cardId}"][data-status="${cardState.status}"]`);
-          if (statusButton) {
-            statusButton.click();
-          }
-        }
-        
-        // Восстанавливаем карточки мафии
-        for (let cardType in cardState.mafiaCards) {
-          if (cardState.mafiaCards[cardType]) {
-            const mafiaButton = document.querySelector(`.card-button[data-card="${cardId}"][data-card-type="${cardType}"]`);
-            if (mafiaButton) {
-              mafiaButton.click();
+        function restoreState(state) {
+            // ИСПРАВЛЕНИЕ: Сбрасываем глобальное состояние перед восстановлением
+            window.selectedRoles = {};
+            window.selectedColors = {};
+            window.sheriffCount = 0;
+            window.donCount = 0;
+            
+            // Восстанавливаем состояние всех плашек из сервера
+            for (let cardId in state) {
+                const cardState = state[cardId];
+                
+                // Восстанавливаем имя
+                const nameInput = document.querySelector(`.name-input[data-card="${cardId}"]`);
+                if (nameInput && cardState.name) {
+                    nameInput.value = cardState.name;
+                }
+                
+                // Восстанавливаем цвет
+                if (cardState.color !== "default") {
+                    window.selectedColors[cardId] = cardState.color;
+                    const colorButton = document.querySelector(`.control-button[data-card="${cardId}"][data-color="${cardState.color}"]`);
+                    if (colorButton) {
+                        colorButton.classList.add('selected');
+                    }
+                }
+                
+                // Восстанавливаем роль
+                if (cardState.role) {
+                    window.selectedRoles[cardId] = cardState.role;
+                    if (cardState.role === 'sheriff') window.sheriffCount++;
+                    else if (cardState.role === 'don') window.donCount++;
+                    
+                    const roleButton = document.querySelector(`.role-button[data-card="${cardId}"][data-role="${cardState.role}"]`);
+                    if (roleButton) {
+                        roleButton.classList.add('selected');
+                    }
+                }
+                
+                // Восстанавливаем статус
+                if (cardState.status) {
+                    const statusButton = document.querySelector(`.status-button[data-card="${cardId}"][data-status="${cardState.status}"]`);
+                    if (statusButton) {
+                        statusButton.classList.add('selected');
+                    }
+                }
+                
+                // Восстанавливаем карточки мафии
+                for (let cardType in cardState.mafiaCards) {
+                    if (cardState.mafiaCards[cardType]) {
+                        const mafiaButton = document.querySelector(`.card-button[data-card="${cardId}"][data-card-type="${cardType}"]`);
+                        if (mafiaButton) {
+                            mafiaButton.classList.add('selected');
+                        }
+                    }
+                }
             }
-          }
         }
-      }
-    }
 
-    function initializeControls() {
-      // Добавляем обработчики для всех элементов управления
-      document.querySelectorAll('.name-input').forEach(input => {
-        input.addEventListener('input', function() {
-          if (!isAuthorized) return alert("Сначала авторизуйтесь!");
-          const cardId = this.getAttribute('data-card');
-          ws.send(JSON.stringify({ 
-            type: "set_name", 
-            cardId: parseInt(cardId), 
-            name: this.value 
-          }));
-        });
-      });
+        function initializeControls() {
+            // Добавляем обработчики для всех элементов управления
+            document.querySelectorAll('.name-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    if (!isAuthorized) return alert("Сначала авторизуйтесь!");
+                    const cardId = this.getAttribute('data-card');
+                    ws.send(JSON.stringify({ 
+                        type: "set_name", 
+                        cardId: parseInt(cardId), 
+                        name: this.value 
+                    }));
+                });
+            });
 
-      // Обработчики для кнопок цвета
-      document.querySelectorAll('.control-button').forEach(button => {
-        button.addEventListener('click', function() {
-          if (!isAuthorized) return alert("Сначала авторизуйтесь!");
-          const cardId = this.getAttribute('data-card');
-          const color = this.getAttribute('data-color');
-          ws.send(JSON.stringify({ 
-            type: "set_color", 
-            cardId: parseInt(cardId), 
-            color: color 
-          }));
-        });
-      });
+            // Обработчики для кнопок цвета
+            document.querySelectorAll('.control-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!isAuthorized) return alert("Сначала авторизуйтесь!");
+                    const cardId = this.getAttribute('data-card');
+                    const color = this.getAttribute('data-color');
+                    
+                    // ДОБАВЛЕНО: Проверка перед отправкой
+                    if (window.canSelectColor && !window.canSelectColor(cardId, color)) {
+                        return;
+                    }
 
-      // Обработчики для кнопок ролей
-      document.querySelectorAll('.role-button').forEach(button => {
-        button.addEventListener('click', function() {
-          if (!isAuthorized) return alert("Сначала авторизуйтесь!");
-          const cardId = this.getAttribute('data-card');
-          const role = this.getAttribute('data-role');
-          ws.send(JSON.stringify({ 
-            type: "set_role", 
-            cardId: parseInt(cardId), 
-            role: role 
-          }));
-        });
-      });
+                    // Убираем выделение с всех кнопок для этой плашки
+                    const allButtonsForCard = document.querySelectorAll(`.control-button[data-card="${cardId}"]`);
+                    allButtonsForCard.forEach(btn => btn.classList.remove('selected'));
+                    
+                    // Добавляем выделение на clicked кнопку
+                    this.classList.add('selected');
+                    
+                    // ДОБАВЛЕНО: Обновляем глобальное состояние
+                    window.selectedColors[cardId] = color;
+                    
+                    ws.send(JSON.stringify({ 
+                        type: "set_color", 
+                        cardId: parseInt(cardId), 
+                        color: color 
+                    }));
+                });
+            });
 
-      // Обработчики для кнопок статусов
-      document.querySelectorAll('.status-button').forEach(button => {
-        button.addEventListener('click', function() {
-          if (!isAuthorized) return alert("Сначала авторизуйтесь!");
-          const cardId = this.getAttribute('data-card');
-          const status = this.getAttribute('data-status');
-          ws.send(JSON.stringify({ 
-            type: "set_status", 
-            cardId: parseInt(cardId), 
-            status: status 
-          }));
-        });
-      });
+            // Обработчики для кнопок ролей
+            document.querySelectorAll('.role-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!isAuthorized) return alert("Сначала авторизуйтесь!");
+                    const cardId = this.getAttribute('data-card');
+                    const role = this.getAttribute('data-role');
+                    
+                    // ДОБАВЛЕНО: Проверка перед отправкой
+                    if (window.canAssignRole && !window.canAssignRole(role, cardId)) {
+                        return;
+                    }
 
-      // Обработчики для карточек мафии
-      document.querySelectorAll('.card-button').forEach(button => {
-        button.addEventListener('click', function() {
-          if (!isAuthorized) return alert("Сначала авторизуйтесь!");
-          const cardId = this.getAttribute('data-card');
-          const cardType = this.getAttribute('data-card-type');
-          const isSelected = this.classList.contains('selected');
-          ws.send(JSON.stringify({ 
-            type: "set_mafia_card", 
-            cardId: parseInt(cardId), 
-            cardType: cardType,
-            visible: !isSelected
-          }));
-        });
-      });
+                    // Убираем выделение с всех кнопок ролей для этой плашки
+                    const allRoleButtonsForCard = document.querySelectorAll(`.role-button[data-card="${cardId}"]`);
+                    allRoleButtonsForCard.forEach(btn => btn.classList.remove('selected'));
+                    
+                    // Добавляем выделение на clicked кнопку
+                    this.classList.add('selected');
+                    
+                    // ДОБАВЛЕНО: Обновляем глобальное состояние
+                    if (window.selectedRoles[cardId]) {
+                        const previousRole = window.selectedRoles[cardId];
+                        if (previousRole === 'sheriff') window.sheriffCount--;
+                        else if (previousRole === 'don') window.donCount--;
+                    }
+                    
+                    window.selectedRoles[cardId] = role;
+                    if (role === 'sheriff') window.sheriffCount++;
+                    else if (role === 'don') window.donCount++;
+                    
+                    ws.send(JSON.stringify({ 
+                        type: "set_role", 
+                        cardId: parseInt(cardId), 
+                        role: role 
+                    }));
+                });
+            });
 
-      // Обработчики для сброса отдельных плашек
-      document.querySelectorAll('.reset-card-button').forEach(button => {
-        button.addEventListener('click', function() {
-          if (!isAuthorized) return alert("Сначала авторизуйтесь!");
-          const cardId = this.getAttribute('data-card');
-          ws.send(JSON.stringify({ 
-            type: "reset_card", 
-            cardId: parseInt(cardId)
-          }));
-        });
-      });
+            // Обработчики для кнопок статусов
+            document.querySelectorAll('.status-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!isAuthorized) return alert("Сначала авторизуйтесь!");
+                    const cardId = this.getAttribute('data-card');
+                    const status = this.getAttribute('data-status');
+                    
+                    // Убираем выделение с всех кнопок статусов для этой плашки
+                    const allStatusButtonsForCard = document.querySelectorAll(`.status-button[data-card="${cardId}"]`);
+                    allStatusButtonsForCard.forEach(btn => btn.classList.remove('selected'));
+                    
+                    // Добавляем выделение на clicked кнопку
+                    this.classList.add('selected');
+                    
+                    ws.send(JSON.stringify({ 
+                        type: "set_status", 
+                        cardId: parseInt(cardId), 
+                        status: status 
+                    }));
+                });
+            });
 
-      // Обработчик для сброса всех плашек
-      document.getElementById('reset-button').addEventListener('click', function() {
-        if (!isAuthorized) return alert("Сначала авторизуйтесь!");
-        ws.send(JSON.stringify({ type: "reset_all" }));
-      });
-    }
+            // Обработчики для карточек мафии
+            document.querySelectorAll('.card-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!isAuthorized) return alert("Сначала авторизуйтесь!");
+                    const cardId = this.getAttribute('data-card');
+                    const cardType = this.getAttribute('data-card-type');
+                    const isSelected = this.classList.contains('selected');
+                    
+                    // Переключаем выделение
+                    if (isSelected) {
+                        this.classList.remove('selected');
+                    } else {
+                        this.classList.add('selected');
+                    }
+                    
+                    ws.send(JSON.stringify({ 
+                        type: "set_mafia_card", 
+                        cardId: parseInt(cardId), 
+                        cardType: cardType,
+                        visible: !isSelected
+                    }));
+                });
+            });
 
-    function resetCard(cardId) {
-      if (!isAuthorized) return alert("Сначала авторизуйтесь!");
-      ws.send(JSON.stringify({ type: "reset_card", cardId: parseInt(cardId) }));
-    }
+            // Обработчики для сброса отдельных плашек
+            document.querySelectorAll('.reset-card-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!isAuthorized) return alert("Сначала авторизуйтесь!");
+                    const cardId = this.getAttribute('data-card');
+                    
+                    // ДОБАВЛЕНО: Сбрасываем глобальное состояние
+                    if (window.selectedRoles[cardId]) {
+                        const previousRole = window.selectedRoles[cardId];
+                        if (previousRole === 'sheriff') window.sheriffCount--;
+                        else if (previousRole === 'don') window.donCount--;
+                        delete window.selectedRoles[cardId];
+                    }
+                    window.selectedColors[cardId] = null;
+                    
+                    // Сбрасываем выделение кнопок
+                    const allButtonsForCard = document.querySelectorAll(`
+                        .control-button[data-card="${cardId}"],
+                        .role-button[data-card="${cardId}"],
+                        .status-button[data-card="${cardId}"],
+                        .card-button[data-card="${cardId}"]
+                    `);
+                    allButtonsForCard.forEach(btn => btn.classList.remove('selected'));
+                    
+                    ws.send(JSON.stringify({ 
+                        type: "reset_card", 
+                        cardId: parseInt(cardId)
+                    }));
+                });
+            });
 
-    function resetAll() {
-      if (!isAuthorized) return alert("Сначала авторизуйтесь!");
-      ws.send(JSON.stringify({ type: "reset_all" }));
-    }
-    
-
-    
+            // Обработчик для сброса всех плашек
+            document.getElementById('reset-button').addEventListener('click', function() {
+                if (!isAuthorized) return alert("Сначала авторизуйтесь!");
+                
+                // ДОБАВЛЕНО: Сбрасываем все глобальное состояние
+                window.selectedRoles = {};
+                window.selectedColors = {};
+                window.sheriffCount = 0;
+                window.donCount = 0;
+                
+                // Сбрасываем все выделения
+                document.querySelectorAll('.control-button, .role-button, .status-button, .card-button').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                
+                // Скрываем сообщение об ошибке
+                const errorElement = document.getElementById('role-error');
+                if (errorElement) {
+                    errorElement.style.display = 'none';
+                }
+                
+                ws.send(JSON.stringify({ type: "reset_all" }));
+            });
+        }
     </script>
-    
 </body>
 </html>

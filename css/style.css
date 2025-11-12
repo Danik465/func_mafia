@@ -1,25 +1,32 @@
+/* ОБНОВЛЕНО: Убираем пользовательский шрифт и используем стандартные системные шрифты */
+/* Удаляем или комментируем блок @font-face */
+/*
 @font-face {
-            font-family: "Breul-Grotesk";
-            src: url("/fonts/Fontspring-DEMO-breulgroteska-regular.otf") format("woff2");
-            font-display: swap;
-            font-style: normal;
-            font-weight: 200;
-        }
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
-    
+    font-family: "Breul-Grotesk";
+    src: url("/fonts/Fontspring-DEMO-breulgroteska-regular.otf") format("woff2");
+    font-display: swap;
+    font-style: normal;
+    font-weight: 200;
+}
+*/
+
+/* ОБНОВЛЕНО: Устанавливаем единый шрифт для всех текстовых элементов */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-background-color: rgba(0, 0, 0, 0);
-color: #333;
-min-height: 100vh;
-padding: 20px;
-display: flex;
-flex-direction: column;
-align-items: center;
+    /* ИСПРАВЛЕНИЕ: Используем стандартные системные шрифты, которые одинаково отображают кириллицу и латиницу */
+    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+    background-color: rgba(0, 0, 0, 0);
+    color: #333;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* Добавляем стили для изображения по умолчанию */
@@ -58,7 +65,8 @@ align-items: center;
 
 /* Обновляем z-index для текста, чтобы он был поверх изображения */
 .card .card-text {
-    font-family: 'Breul-Grotesk';
+    /* ИСПРАВЛЕНИЕ: Используем тот же шрифт, что и в body */
+    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
     font-weight: bold;
     z-index: 3; /* Увеличиваем z-index, чтобы текст был поверх изображения */
     color: #f1f1f1ff;
@@ -298,6 +306,17 @@ display: flex;
 flex-direction: column;
 gap: 15px;
 }
+/* ОБНОВЛЕНО: Единый шрифт для кнопок */
+.control-button, .role-button, .status-button, .card-button, .reset-card-button, .reset-button {
+    /* ИСПРАВЛЕНИЕ: Используем тот же шрифт, что и в body */
+    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+}
+
+/* ОБНОВЛЕНО: Единый шрифт для заголовков */
+h1, h2, h3 {
+    /* ИСПРАВЛЕНИЕ: Используем тот же шрифт, что и в body */
+    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+}
 
 .button-row {
 display: flex;
@@ -528,7 +547,7 @@ position: absolute;
     text-align: center;
     color: #f1f1f1ff;
     font-weight: bold;
-    font-family: 'Breul-Grotesk', sans-serif;
+    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
     font-size: 16px;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     z-index: 5;
@@ -637,6 +656,8 @@ animation: nameMoveDown 0.5s ease-out forwards;
     display: flex;
     align-items: center;
     justify-content: center;
+        /* ИСПРАВЛЕНИЕ: Используем тот же шрифт, что и в body */
+    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
 }
 
 /* ДОБАВЛЕНО: Стили для номера плашки в различных состояниях */
@@ -672,6 +693,8 @@ animation: nameMoveDown 0.5s ease-out forwards;
     border: 2px solid #3498db;
     border-radius: 6px;
     padding: 0 10px;
+        /* ИСПРАВЛЕНИЕ: Используем тот же шрифт, что и в body */
+    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
     font-size: 1rem;
     background-color: white;
     transition: all 0.2s ease;

@@ -25,17 +25,15 @@ const mafiaCardImages = {
 // Путь к иконке черной карты
 const blackCardIconPath = "Roles/Мафия.svg";
 
+// ДОБАВЛЕНО: Глобальные переменные для отслеживания состояния
+window.selectedRoles = {};
+window.selectedColors = {};
+window.sheriffCount = 0;
+window.donCount = 0;
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Объект для хранения выбранных ролей для каждой плашки
-    const selectedRoles = {};
-    // Объект для хранения выбранных цветов для каждой плашки
-    const selectedColors = {};
     // Объект для хранения элементов с именами игроков
     const nameElements = {};
-    
-    // Переменные для отслеживания количества выбранных ролей
-    let sheriffCount = 0;
-    let donCount = 0;
 
     // Флаг для отслеживания выбора цвета для каждой плашки
     const hasColorSelected = {};
@@ -44,154 +42,208 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectedMafiaCards = {};
 
     // Функция для инициализации плашек
-    function initializeCards() {
-        for (let i = 1; i <= 10; i++) {
-            const card = document.getElementById(`card-${i}`);
-            const cardText = card.querySelector('.card-text');
-            const defaultImage = card.querySelector('.default-image');
-            const blackCardIcon = document.getElementById(`black-card-icon-${i}`);
+function initializeCards() {
+    for (let i = 1; i <= 10; i++) {
+        const card = document.getElementById(`card-${i}`);
+        const defaultImage = card.querySelector('.default-image');
+        const blackCardIcon = document.getElementById(`black-card-icon-${i}`);
 
-            // Устанавливаем номер плашки
-            const cardNumber = card.querySelector('.card-number');
+        // Проверяем существование элементов перед работой с ними
+        if (!card || !defaultImage || !blackCardIcon) {
+            console.warn(`Элементы для карточки ${i} не найдены, пропускаем`);
+            continue;
+        }
+
+        // Устанавливаем номер плашки
+        const cardNumber = card.querySelector('.card-number');
+        if (cardNumber) {
             cardNumber.textContent = i;
-            
-
-            
-            // Устанавливаем изображение по умолчанию
-            defaultImage.src = `${DEFAULT_IMAGE_PATH}.png`;
-            defaultImage.style.display = 'block';
-            hasColorSelected[i] = false;
-            
-            // Устанавливаем иконку черной карты
-            blackCardIcon.src = blackCardIconPath;
-            blackCardIcon.style.display = 'none';
-            
-            // Инициализируем объект для хранения карточек мафии
-            selectedMafiaCards[i] = {
-                red: false,
-                gray: false,
-                yellow: false
-            };
-            
-            // Создаем элемент для отображения имени
-            const nameElement = document.createElement('div');
+        }
+        
+        // Устанавливаем изображение по умолчанию
+        defaultImage.src = `${DEFAULT_IMAGE_PATH}.png`;
+        defaultImage.style.display = 'block';
+        hasColorSelected[i] = false;
+        
+        // Устанавливаем иконку черной карты
+        blackCardIcon.src = blackCardIconPath;
+        blackCardIcon.style.display = 'none';
+        
+        // Инициализируем объект для хранения карточек мафии
+        selectedMafiaCards[i] = {
+            red: false,
+            gray: false,
+            yellow: false
+        };
+        
+        // ИСПРАВЛЕНИЕ: Создаем элемент для отображения имени, если его еще нет
+        let nameElement = nameElements[i];
+        if (!nameElement) {
+            nameElement = document.createElement('div');
             nameElement.className = 'player-name';
-            card.parentNode.appendChild(nameElement);
+            // ИСПРАВЛЕНИЕ: Добавляем имя в правильный контейнер
+            card.appendChild(nameElement);
             nameElements[i] = nameElement;
-            
-            // Создаем контейнер для карточек мафии
-            const mafiaContainer = document.createElement('div');
+        }
+        
+        // Создаем контейнер для карточек мафии
+        let mafiaContainer = document.getElementById(`mafia-container-${i}`);
+        if (!mafiaContainer) {
+            mafiaContainer = document.createElement('div');
             mafiaContainer.className = 'mafia-cards-container';
             mafiaContainer.id = `mafia-container-${i}`;
             card.appendChild(mafiaContainer);
-            
-            // Создаем три карточки разных цветов (изображения)
-            for (const cardType of ['red', 'gray', 'yellow']) {
-                const cardElement = document.createElement('img');
-                cardElement.className = 'mafia-card';
-                cardElement.id = `mafia-card-${cardType}-${i}`;
-                cardElement.src = mafiaCardImages[cardType];
-                cardElement.alt = `${cardType} card`;
-                cardElement.style.display = 'none'; // ИЗМЕНЕНО: Явно скрываем карточки
-                mafiaContainer.appendChild(cardElement);
-            }
-            
-            // Запускаем анимацию появления плашки
-            setTimeout(() => {
-                card.classList.add('animate');
-            }, i * 100);
         }
-    }
-// Функция для проверки совместимости роли и цвета карточки
-function canSelectColor(cardId, color) {
-    const errorElement = document.getElementById('role-error');
-    
-    // Если выбран шериф, нельзя выбрать черную карточку
-    if (selectedRoles[cardId] === 'sheriff' && color === 'black') {
-        errorElement.textContent = 'Шериф не может быть черной картой!';
-        errorElement.style.display = 'block';
+        
+        // Создаем три карточки разных цветов (изображения)
+        for (const cardType of ['red', 'gray', 'yellow']) {
+            const cardElementId = `mafia-card-${cardType}-${i}`;
+            let mafiaCard = document.getElementById(cardElementId);
+            
+            if (!mafiaCard) {
+                mafiaCard = document.createElement('img');
+                mafiaCard.className = 'mafia-card';
+                mafiaCard.id = cardElementId;
+                mafiaCard.src = mafiaCardImages[cardType];
+                mafiaCard.alt = `${cardType} card`;
+                mafiaCard.style.display = 'none';
+                mafiaContainer.appendChild(mafiaCard);
+            }
+        }
+        
+        // Запускаем анимацию появления плашки
         setTimeout(() => {
-            errorElement.style.display = 'none';
-        }, 3000);
-        return false;
+            card.classList.add('animate');
+        }, i * 100);
     }
-    
-    // Если выбран дон, нельзя выбрать красную карточку
-    if (selectedRoles[cardId] === 'don' && color === 'red') {
-        errorElement.textContent = 'Дон не может быть красной картой!';
-        errorElement.style.display = 'block';
-        setTimeout(() => {
-            errorElement.style.display = 'none';
-        }, 3000);
-        return false;
-    }
-    
-    errorElement.style.display = 'none';
-    return true;
 }
 
-
-
-
-
+    // Функция для проверки совместимости роли и цвета карточки
+    function canSelectColor(cardId, color) {
+        const errorElement = document.getElementById('role-error');
+        const currentRole = window.selectedRoles[cardId];
+        
+        // ИСПРАВЛЕНИЕ: Добавлена проверка на существующую роль при выборе цвета
+        if (currentRole === 'sheriff' && color === 'black') {
+            if (errorElement) {
+                errorElement.textContent = 'Шериф не может быть черной картой!';
+                errorElement.style.display = 'block';
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 3000);
+            }
+            return false;
+        }
+        
+        if (currentRole === 'don' && color === 'red') {
+            if (errorElement) {
+                errorElement.textContent = 'Дон не может быть красной картой!';
+                errorElement.style.display = 'block';
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 3000);
+            }
+            return false;
+        }
+        
+        if (errorElement) {
+            errorElement.style.display = 'none';
+        }
+        return true;
+    }
 
     // Функция для анимации плашки
     function animateCard(cardId) {
         const card = document.getElementById(`card-${cardId}`);
-        card.classList.remove('animate');
-        setTimeout(() => {
-            card.classList.add('animate');
-        }, 10);
+        if (card) {
+            card.classList.remove('animate');
+            setTimeout(() => {
+                card.classList.add('animate');
+            }, 10);
+        }
     }
 
     // Функция для анимации иконки черной карты
     function animateBlackCardIcon(cardId) {
         const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
-        blackCardIcon.classList.remove('animate');
-        setTimeout(() => {
-            blackCardIcon.classList.add('animate');
-        }, 10);
+        if (blackCardIcon) {
+            blackCardIcon.classList.remove('animate');
+            setTimeout(() => {
+                blackCardIcon.classList.add('animate');
+            }, 10);
+        }
     }
 
     // Функция для проверки, можно ли назначить роль
     function canAssignRole(role, cardId) {
         const errorElement = document.getElementById('role-error');
         
-        // Проверяем, не назначена ли уже эта роль другой плашке
+        // ИСПРАВЛЕНИЕ: Улучшена проверка на количество ролей
         if (role === 'sheriff') {
-            if (sheriffCount > 0 && selectedRoles[cardId] !== 'sheriff') {
-                errorElement.textContent = 'Шериф уже выбран! Можно выбрать только одного шерифа.';
-                errorElement.style.display = 'block';
-                setTimeout(() => {
-                    errorElement.style.display = 'none';
-                }, 3000);
+            if (window.sheriffCount > 0 && window.selectedRoles[cardId] !== 'sheriff') {
+                if (errorElement) {
+                    errorElement.textContent = 'Шериф уже выбран! Можно выбрать только одного шерифа.';
+                    errorElement.style.display = 'block';
+                    setTimeout(() => {
+                        errorElement.style.display = 'none';
+                    }, 3000);
+                }
                 return false;
             }
         } else if (role === 'don') {
-            if (donCount > 0 && selectedRoles[cardId] !== 'don') {
-                errorElement.textContent = 'Дон уже выбран! Можно выбрать только одного дона.';
-                errorElement.style.display = 'block';
-                setTimeout(() => {
-                    errorElement.style.display = 'none';
-                }, 3000);
+            if (window.donCount > 0 && window.selectedRoles[cardId] !== 'don') {
+                if (errorElement) {
+                    errorElement.textContent = 'Дон уже выбран! Можно выбрать только одного дона.';
+                    errorElement.style.display = 'block';
+                    setTimeout(() => {
+                        errorElement.style.display = 'none';
+                    }, 3000);
+                }
                 return false;
             }
         }
         
-        errorElement.style.display = 'none';
+        // ИСПРАВЛЕНИЕ: Добавлена проверка совместимости роли с выбранным цветом
+        const currentColor = window.selectedColors[cardId];
+        if (currentColor) {
+            if (role === 'sheriff' && currentColor === 'black') {
+                if (errorElement) {
+                    errorElement.textContent = 'Шериф не может быть черной картой! Сначала измените цвет карты.';
+                    errorElement.style.display = 'block';
+                    setTimeout(() => {
+                        errorElement.style.display = 'none';
+                    }, 3000);
+                }
+                return false;
+            }
+            if (role === 'don' && currentColor === 'red') {
+                if (errorElement) {
+                    errorElement.textContent = 'Дон не может быть красной картой! Сначала измените цвет карты.';
+                    errorElement.style.display = 'block';
+                    setTimeout(() => {
+                        errorElement.style.display = 'none';
+                    }, 3000);
+                }
+                return false;
+            }
+        }
+        
+        if (errorElement) {
+            errorElement.style.display = 'none';
+        }
         return true;
     }
 
     // Функция для обновления счетчиков ролей
     function updateRoleCounters() {
-        sheriffCount = 0;
-        donCount = 0;
+        window.sheriffCount = 0;
+        window.donCount = 0;
         
-        for (const cardId in selectedRoles) {
-            if (selectedRoles[cardId] === 'sheriff') {
-                sheriffCount++;
-            } else if (selectedRoles[cardId] === 'don') {
-                donCount++;
+        for (const cardId in window.selectedRoles) {
+            if (window.selectedRoles[cardId] === 'sheriff') {
+                window.sheriffCount++;
+            } else if (window.selectedRoles[cardId] === 'don') {
+                window.donCount++;
             }
         }
     }
@@ -199,6 +251,7 @@ function canSelectColor(cardId, color) {
     // Функция для отображения роли на плашке
     function showRoleIcon(cardId, role) {
         const roleIcon = document.getElementById(`role-icon-${cardId}`);
+        if (!roleIcon) return;
         
         // Устанавливаем правильный src для иконки
         roleIcon.src = roleIcons[role];
@@ -211,13 +264,17 @@ function canSelectColor(cardId, color) {
         // Если роль - Дон, скрываем иконку черной карты
         if (role === 'don') {
             const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
-            blackCardIcon.style.display = 'none';
+            if (blackCardIcon) {
+                blackCardIcon.style.display = 'none';
+            }
         }
     }
 
     // Функция для сброса отдельной плашки
     function resetSingleCard(cardId) {
         const card = document.getElementById(`card-${cardId}`);
+        if (!card) return;
+        
         const defaultImage = card.querySelector('.default-image');
         const roleIcon = document.getElementById(`role-icon-${cardId}`);
         const statusIcon = document.getElementById(`status-icon-${cardId}`);
@@ -231,41 +288,60 @@ function canSelectColor(cardId, color) {
 
         // Восстанавливаем номер плашки
         const cardNumber = card.querySelector('.card-number');
-        cardNumber.textContent = cardId;
+        if (cardNumber) {
+            cardNumber.textContent = cardId;
+        }
 
         // Восстанавливаем изображение по умолчанию
-        defaultImage.src = `${DEFAULT_IMAGE_PATH}.png`;
-        defaultImage.style.display = 'block';
+        if (defaultImage) {
+            defaultImage.src = `${DEFAULT_IMAGE_PATH}.png`;
+            defaultImage.style.display = 'block';
+        }
         hasColorSelected[cardId] = false;
+
+        // ИСПРАВЛЕНИЕ: Сбрасываем выбранный цвет в глобальном состоянии
+        window.selectedColors[cardId] = null;
 
         // Сбрасываем состояние статуса
         card.classList.remove('voted', 'shot', 'removed');
-        nameElement.classList.remove('voted', 'shot', 'removed');
-        roleIcon.classList.remove('voted', 'shot', 'removed');
-        blackCardIcon.classList.remove('voted', 'shot', 'removed');
+        if (nameElement) {
+            nameElement.classList.remove('voted', 'shot', 'removed');
+        }
+        if (roleIcon) {
+            roleIcon.classList.remove('voted', 'shot', 'removed');
+        }
+        if (blackCardIcon) {
+            blackCardIcon.classList.remove('voted', 'shot', 'removed');
+        }
 
         // Сбрасываем имя
         if (nameInput) {
             nameInput.value = '';
         }
-        nameElement.textContent = '';
-        nameElement.style.display = 'none';
-        
-        // Сбрасываем роль
-        if (selectedRoles[cardId]) {
-            const previousRole = selectedRoles[cardId];
-            if (previousRole === 'sheriff') {
-                sheriffCount--;
-            } else if (previousRole === 'don') {
-                donCount--;
-            }
-            delete selectedRoles[cardId];
+        if (nameElement) {
+            nameElement.textContent = '';
+            nameElement.style.display = 'none';
         }
-        roleIcon.style.display = 'none';
-        roleIcon.classList.remove('animate', 'voted', 'shot', 'removed');
+        
+        // Сбрасываем роль в глобальном состоянии
+        if (window.selectedRoles[cardId]) {
+            const previousRole = window.selectedRoles[cardId];
+            if (previousRole === 'sheriff') {
+                window.sheriffCount--;
+            } else if (previousRole === 'don') {
+                window.donCount--;
+            }
+            delete window.selectedRoles[cardId];
+        }
+        if (roleIcon) {
+            roleIcon.style.display = 'none';
+            roleIcon.classList.remove('animate', 'voted', 'shot', 'removed');
+        }
         
         // Сбрасываем статус
-        statusIcon.style.display = 'none';
+        if (statusIcon) {
+            statusIcon.style.display = 'none';
+        }
         
         // Сбрасываем карточки мафии
         const mafiaCards = card.querySelectorAll('.mafia-card');
@@ -281,8 +357,10 @@ function canSelectColor(cardId, color) {
         };
         
         // Сбрасываем иконку черной карты
-        blackCardIcon.style.display = 'none';
-        blackCardIcon.classList.remove('animate', 'voted', 'shot', 'removed');
+        if (blackCardIcon) {
+            blackCardIcon.style.display = 'none';
+            blackCardIcon.classList.remove('animate', 'voted', 'shot', 'removed');
+        }
         
         // Снимаем выделение со всех кнопок, связанных с этой плашкой
         const allButtonsForCard = document.querySelectorAll(`
@@ -303,15 +381,17 @@ function canSelectColor(cardId, color) {
     // Инициализация плашек
     initializeCards();
 
-   // Обработчики для ввода имен
+    // Обработчики для ввода имен
     const nameInputs = document.querySelectorAll('.name-input');
     nameInputs.forEach(input => {
-        let previousValue = ''; // Добавляем переменную для хранения предыдущего значения
+        let previousValue = '';
         
         input.addEventListener('input', function() {
             const cardId = this.getAttribute('data-card');
             const enteredName = this.value;
             const nameElement = nameElements[cardId];
+            
+            if (!nameElement) return;
             
             // Обновляем имя игрока
             if (enteredName) {
@@ -324,31 +404,34 @@ function canSelectColor(cardId, color) {
             }
             
             // Запускаем анимацию плашки только при появлении/исчезновении имени
-            // (когда имя становится пустым/непустым)
             if ((previousValue === '' && enteredName !== '') || 
                 (previousValue !== '' && enteredName === '')) {
                 animateCard(cardId);
             }
             
-            previousValue = enteredName; // Обновляем предыдущее значение
+            previousValue = enteredName;
         });
     });
 
     // Функция для установки цвета плашки
     function setCardColor(cardId, color) {
         const card = document.getElementById(`card-${cardId}`);
-        const defaultImage = card.querySelector('.default-image');
+        const defaultImage = card?.querySelector('.default-image');
         const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
+
+        if (!card || !defaultImage) return;
 
         // Устанавливаем соответствующее изображение в зависимости от цвета
         if (color === 'red') {
             defaultImage.src = mafiaCardImages.redCard;
             // Скрываем иконку черной карты
-            blackCardIcon.style.display = 'none';
+            if (blackCardIcon) {
+                blackCardIcon.style.display = 'none';
+            }
         } else if (color === 'black') {
             defaultImage.src = mafiaCardImages.blackCard;
             // Показываем иконку черной карты только если роль не Дон
-            if (selectedRoles[cardId] !== 'don') {
+            if (window.selectedRoles[cardId] !== 'don' && blackCardIcon) {
                 blackCardIcon.style.display = 'block';
                 // Запускаем анимацию иконки
                 animateBlackCardIcon(cardId);
@@ -357,11 +440,12 @@ function canSelectColor(cardId, color) {
 
         defaultImage.style.display = 'block';
         hasColorSelected[cardId] = true;
-        selectedColors[cardId] = color;
+        // ИСПРАВЛЕНИЕ: Сохраняем цвет в глобальном состоянии
+        window.selectedColors[cardId] = color;
         
         // Если для этой плашки есть выбранная роль, показываем ее
-        if (selectedRoles[cardId]) {
-            showRoleIcon(cardId, selectedRoles[cardId]);
+        if (window.selectedRoles[cardId]) {
+            showRoleIcon(cardId, window.selectedRoles[cardId]);
         }
 
         // Запускаем анимацию для всей плашки
@@ -369,7 +453,7 @@ function canSelectColor(cardId, color) {
         
         // Анимируем имя игрока, если оно есть
         const nameElement = nameElements[cardId];
-        if (nameElement.textContent) {
+        if (nameElement && nameElement.textContent) {
             nameElement.classList.remove('animate');
             setTimeout(() => {
                 nameElement.classList.add('animate');
@@ -410,35 +494,11 @@ function canSelectColor(cardId, color) {
             const role = this.getAttribute('data-role');
             const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
             
-            
-            // Проверяем, можно ли назначить эту роль
+            // ИСПРАВЛЕНИЕ: Проверяем, можно ли назначить эту роль
             if (!canAssignRole(role, cardId)) {
                 return;
             }
 
-             // Проверяем совместимость с уже выбранным цветом
-            if (hasColorSelected[cardId]) {
-                if (role === 'sheriff' && selectedColors[cardId] === 'black') {
-                    document.getElementById('role-error').textContent = 'Шериф не может быть черной картой! Сначала измените цвет карты.';
-                    document.getElementById('role-error').style.display = 'block';
-                    setTimeout(() => {
-                        document.getElementById('role-error').style.display = 'none';
-                    }, 3000);
-                    return;
-                }
-                if (role === 'don' && selectedColors[cardId] === 'red') {
-                    document.getElementById('role-error').textContent = 'Дон не может быть красной картой! Сначала измените цвет карты.';
-                    document.getElementById('role-error').style.display = 'block';
-                    setTimeout(() => {
-                        document.getElementById('role-error').style.display = 'none';
-                    }, 3000);
-                    return;
-                }
-            }
-
-
-
-            
             // Убираем выделение с всех кнопок ролей для этой плашки
             const allRoleButtonsForCard = document.querySelectorAll(`.role-button[data-card="${cardId}"]`);
             allRoleButtonsForCard.forEach(btn => btn.classList.remove('selected'));
@@ -447,25 +507,25 @@ function canSelectColor(cardId, color) {
             this.classList.add('selected');
             
             // Убираем предыдущую роль, если она была назначена этой плашке
-            if (selectedRoles[cardId]) {
-                const previousRole = selectedRoles[cardId];
+            if (window.selectedRoles[cardId]) {
+                const previousRole = window.selectedRoles[cardId];
                 if (previousRole === 'sheriff') {
-                    sheriffCount--;
+                    window.sheriffCount--;
                 } else if (previousRole === 'don') {
-                    donCount--;
+                    window.donCount--;
                 }
             }
             
-            // Сохраняем выбранную роль
-            selectedRoles[cardId] = role;
+            // Сохраняем выбранную роль в глобальном состоянии
+            window.selectedRoles[cardId] = role;
             
             // Обновляем счетчики ролей
             updateRoleCounters();
             
             // Если выбрана роль Дон, скрываем иконку черной карты
-            if (role === 'don') {
+            if (role === 'don' && blackCardIcon) {
                 blackCardIcon.style.display = 'none';
-            } else if (hasColorSelected[cardId] && selectedColors[cardId] === 'black') {
+            } else if (hasColorSelected[cardId] && window.selectedColors[cardId] === 'black' && blackCardIcon) {
                 // Если выбрана черная карта и роль не Дон, показываем иконку
                 blackCardIcon.style.display = 'block';
                 animateBlackCardIcon(cardId);
@@ -478,90 +538,100 @@ function canSelectColor(cardId, color) {
         });
     });
 
+    // Добавляем обработчики для кнопок статусов
+    const statusButtons = document.querySelectorAll('.status-button');
 
-   // Добавляем обработчики для кнопок статусов (заголосован/отстрел/удален)
-const statusButtons = document.querySelectorAll('.status-button');
-
-statusButtons.forEach(button => {
-    button.addEventListener('click', function() {
-        const cardId = this.getAttribute('data-card');
-        const status = this.getAttribute('data-status');
-        const card = document.getElementById(`card-${cardId}`);
-        const statusIcon = document.getElementById(`status-icon-${cardId}`);
-        const nameElement = nameElements[cardId];
-        const roleIcon = document.getElementById(`role-icon-${cardId}`);
-        const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
-        
-        // Сохраняем текущее состояние видимости иконки черной карты
-        const wasBlackCardIconVisible = blackCardIcon.style.display === 'block';
-        
-        // Убираем выделение с всех кнопок статусов для этой плашки
-        const allStatusButtonsForCard = document.querySelectorAll(`.status-button[data-card="${cardId}"]`);
-        allStatusButtonsForCard.forEach(btn => btn.classList.remove('selected'));
-        
-        // Добавляем выделение на clicked кнопку
-        this.classList.add('selected');
-        
-        // Устанавливаем правильный src для иконки статуса
-        statusIcon.src = statusIcons[status];
-        
-        // Устанавливаем статус плашки
-        if (status === 'voted') {
-            card.classList.remove('shot', 'removed');
-            card.classList.add('voted');
-            // Добавляем класс для имени
-            nameElement.classList.remove('shot', 'removed');
-            nameElement.classList.add('voted');
-            // Добавляем класс для иконки роли
-            if (roleIcon.style.display === 'block') {
-                roleIcon.classList.remove('shot', 'removed');
-                roleIcon.classList.add('voted');
-            }
-        } else if (status === 'shot') {
-            card.classList.remove('voted','removed');
-            card.classList.add('shot');
-             // Добавляем класс для имени
-            nameElement.classList.remove('voted', 'removed');
-            nameElement.classList.add('shot');
-            // Добавляем класс для иконки роли
-            if (roleIcon.style.display === 'block') {
-                roleIcon.classList.remove('voted', 'removed');
-                roleIcon.classList.add('shot');
-            }
-        } else if (status === 'removed') {
-            card.classList.remove('voted', 'shot');
-            card.classList.add('removed');
+    statusButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const cardId = this.getAttribute('data-card');
+            const status = this.getAttribute('data-status');
+            const card = document.getElementById(`card-${cardId}`);
+            const statusIcon = document.getElementById(`status-icon-${cardId}`);
+            const nameElement = nameElements[cardId];
+            const roleIcon = document.getElementById(`role-icon-${cardId}`);
+            const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
             
-            // Добавляем класс для имени
-            nameElement.classList.remove('voted', 'shot');
-            nameElement.classList.add('removed');
-            // Добавляем класс для иконки роли
-            if (roleIcon.style.display === 'block') {
-                roleIcon.classList.remove('voted', 'shot');
-                roleIcon.classList.add('removed');
-            }
-        }
-        
-        // ВОССТАНАВЛИВАЕМ видимость иконки черной карты, если она была видимой
-        if (wasBlackCardIconVisible) {
-            blackCardIcon.style.display = 'block';
+            if (!card) return;
             
-            // Также применяем соответствующий класс статуса к иконке черной карты
-            blackCardIcon.classList.remove('voted', 'shot', 'removed');
-            blackCardIcon.classList.add(status);
-        }
-                    
-        // Показываем значок статуса
-        statusIcon.style.display = 'block';
-        
-        // Запускаем анимацию опускания плашки
-        card.classList.remove('animate');
-        setTimeout(() => {
-            card.classList.add('status');
-        }, 10);
+            // Сохраняем текущее состояние видимости иконки черной карты
+            const wasBlackCardIconVisible = blackCardIcon && blackCardIcon.style.display === 'block';
+            
+            // Убираем выделение с всех кнопок статусов для этой плашки
+            const allStatusButtonsForCard = document.querySelectorAll(`.status-button[data-card="${cardId}"]`);
+            allStatusButtonsForCard.forEach(btn => btn.classList.remove('selected'));
+            
+            // Добавляем выделение на clicked кнопку
+            this.classList.add('selected');
+            
+            // Устанавливаем правильный src для иконки статуса
+            if (statusIcon) {
+                statusIcon.src = statusIcons[status];
+            }
+            
+            // Устанавливаем статус плашки
+            if (status === 'voted') {
+                card.classList.remove('shot', 'removed');
+                card.classList.add('voted');
+                // Добавляем класс для имени
+                if (nameElement) {
+                    nameElement.classList.remove('shot', 'removed');
+                    nameElement.classList.add('voted');
+                }
+                // Добавляем класс для иконки роли
+                if (roleIcon && roleIcon.style.display === 'block') {
+                    roleIcon.classList.remove('shot', 'removed');
+                    roleIcon.classList.add('voted');
+                }
+            } else if (status === 'shot') {
+                card.classList.remove('voted','removed');
+                card.classList.add('shot');
+                 // Добавляем класс для имени
+                if (nameElement) {
+                    nameElement.classList.remove('voted', 'removed');
+                    nameElement.classList.add('shot');
+                }
+                // Добавляем класс для иконки роли
+                if (roleIcon && roleIcon.style.display === 'block') {
+                    roleIcon.classList.remove('voted', 'removed');
+                    roleIcon.classList.add('shot');
+                }
+            } else if (status === 'removed') {
+                card.classList.remove('voted', 'shot');
+                card.classList.add('removed');
+                
+                // Добавляем класс для имени
+                if (nameElement) {
+                    nameElement.classList.remove('voted', 'shot');
+                    nameElement.classList.add('removed');
+                }
+                // Добавляем класс для иконки роли
+                if (roleIcon && roleIcon.style.display === 'block') {
+                    roleIcon.classList.remove('voted', 'shot');
+                    roleIcon.classList.add('removed');
+                }
+            }
+            
+            // ВОССТАНАВЛИВАЕМ видимость иконки черной карты, если она была видимой
+            if (wasBlackCardIconVisible && blackCardIcon) {
+                blackCardIcon.style.display = 'block';
+                
+                // Также применяем соответствующий класс статуса к иконке черной карты
+                blackCardIcon.classList.remove('voted', 'shot', 'removed');
+                blackCardIcon.classList.add(status);
+            }
+                        
+            // Показываем значок статуса
+            if (statusIcon) {
+                statusIcon.style.display = 'block';
+            }
+            
+            // Запускаем анимацию опускания плашки
+            card.classList.remove('animate');
+            setTimeout(() => {
+                card.classList.add('status');
+            }, 10);
+        });
     });
-});
-
     
     // Обработчики для кнопок карточек мафии
     const cardButtons = document.querySelectorAll('.card-button');
@@ -578,9 +648,6 @@ statusButtons.forEach(button => {
                 return;
             }
             
-
-
-
             // Переключаем состояние карточки
             selectedMafiaCards[cardId][cardType] = !selectedMafiaCards[cardId][cardType];
             
@@ -598,119 +665,208 @@ statusButtons.forEach(button => {
             setTimeout(() => {
                 mafiaCard.classList.add('animate');
             }, 10);
-
-
         });
     });
 
-// Глобальные функции для overlay.html
-window.setPlayerName = function(cardId, name) {
-    const nameElement = nameElements[cardId];
-    if (nameElement) {
-        if (name) {
-            nameElement.textContent = name;
-            nameElement.style.display = 'block';
-            nameElement.classList.add('animate');
-        } else {
-            nameElement.textContent = '';
-            nameElement.style.display = 'none';
-        }
-        animateCard(cardId);
+    // Добавляем обработчики для кнопок сброса отдельных плашек
+    const resetCardButtons = document.querySelectorAll('.reset-card-button');
+
+    resetCardButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const cardId = this.getAttribute('data-card');
+            resetSingleCard(cardId);
+        });
+    });
+
+    // Добавляем обработчик для кнопки сброса всех плашек
+    const resetButton = document.getElementById('reset-button');
+    if (resetButton) {
+        resetButton.addEventListener('click', function() {
+            // Сбрасываем все плашки по одной
+            for (let i = 1; i <= 10; i++) {
+                resetSingleCard(i);
+            }
+            
+            // Скрываем сообщение об ошибке
+            const errorElement = document.getElementById('role-error');
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
+        });
     }
+});
+
+window.setPlayerName = function(cardId, name) {
+    console.log("setPlayerName called for card", cardId, "with name:", name);
+    
+    // ИСПРАВЛЕНИЕ: Получаем карточку и создаем элемент имени, если его нет
+    const card = document.getElementById(`card-${cardId}`);
+    if (!card) {
+        console.error("Card not found:", cardId);
+        return;
+    }
+    
+    // Ищем существующий элемент имени или создаем новый
+    let nameElement = card.querySelector('.player-name');
+    if (!nameElement) {
+        nameElement = document.createElement('div');
+        nameElement.className = 'player-name';
+        card.appendChild(nameElement);
+        console.log("Created new name element for card", cardId);
+    }
+    
+    if (name && name.trim() !== '') {
+        nameElement.textContent = name;
+        nameElement.style.display = 'block';
+        nameElement.classList.add('animate');
+        console.log("Set name for card", cardId, "to:", name);
+    } else {
+        nameElement.textContent = '';
+        nameElement.style.display = 'none';
+        console.log("Cleared name for card", cardId);
+    }
+    
+    // Анимируем карточку
+    card.classList.remove('animate');
+    setTimeout(() => {
+        card.classList.add('animate');
+    }, 10);
 };
 
 window.setCardColor = function(cardId, color) {
     const card = document.getElementById(`card-${cardId}`);
-    const defaultImage = card.querySelector('.default-image');
+    const defaultImage = card?.querySelector('.default-image');
     const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
+
+    if (!card || !defaultImage) return;
 
     if (color === 'red') {
         defaultImage.src = mafiaCardImages.redCard;
-        blackCardIcon.style.display = 'none';
+        if (blackCardIcon) {
+            blackCardIcon.style.display = 'none';
+        }
     } else if (color === 'black') {
         defaultImage.src = mafiaCardImages.blackCard;
-        if (selectedRoles[cardId] !== 'don') {
+        if (window.selectedRoles[cardId] !== 'don' && blackCardIcon) {
             blackCardIcon.style.display = 'block';
-            animateBlackCardIcon(cardId);
+            // Анимируем иконку
+            blackCardIcon.classList.remove('animate');
+            setTimeout(() => {
+                blackCardIcon.classList.add('animate');
+            }, 10);
         }
     }
 
     defaultImage.style.display = 'block';
-    hasColorSelected[cardId] = true;
-    selectedColors[cardId] = color;
+    window.selectedColors[cardId] = color;
     
-    if (selectedRoles[cardId]) {
-        showRoleIcon(cardId, selectedRoles[cardId]);
+    if (window.selectedRoles[cardId]) {
+        const roleIcon = document.getElementById(`role-icon-${cardId}`);
+        if (roleIcon) {
+            roleIcon.src = roleIcons[window.selectedRoles[cardId]];
+            roleIcon.style.display = 'block';
+            roleIcon.classList.remove('animate');
+            setTimeout(() => {
+                roleIcon.classList.add('animate');
+            }, 10);
+        }
     }
 
-    animateCard(cardId);
+    // Анимируем карточку
+    card.classList.remove('animate');
+    setTimeout(() => {
+        card.classList.add('animate');
+    }, 10);
 };
 
 window.setCardRole = function(cardId, role) {
     const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
     
     // Убираем предыдущую роль
-    if (selectedRoles[cardId]) {
-        const previousRole = selectedRoles[cardId];
-        if (previousRole === 'sheriff') sheriffCount--;
-        else if (previousRole === 'don') donCount--;
+    if (window.selectedRoles[cardId]) {
+        const previousRole = window.selectedRoles[cardId];
+        if (previousRole === 'sheriff') window.sheriffCount--;
+        else if (previousRole === 'don') window.donCount--;
     }
     
     // Сохраняем новую роль
-    selectedRoles[cardId] = role;
-    updateRoleCounters();
+    window.selectedRoles[cardId] = role;
+    
+    // Обновляем счетчики
+    window.sheriffCount = 0;
+    window.donCount = 0;
+    for (const id in window.selectedRoles) {
+        if (window.selectedRoles[id] === 'sheriff') window.sheriffCount++;
+        else if (window.selectedRoles[id] === 'don') window.donCount++;
+    }
     
     // Показываем/скрываем иконки
-    if (role === 'don') {
+    if (role === 'don' && blackCardIcon) {
         blackCardIcon.style.display = 'none';
-    } else if (hasColorSelected[cardId] && selectedColors[cardId] === 'black') {
+    } else if (window.selectedColors[cardId] === 'black' && blackCardIcon) {
         blackCardIcon.style.display = 'block';
-        animateBlackCardIcon(cardId);
+        blackCardIcon.classList.remove('animate');
+        setTimeout(() => {
+            blackCardIcon.classList.add('animate');
+        }, 10);
     }
     
     // Показываем иконку роли
-    if (hasColorSelected[cardId]) {
-        showRoleIcon(cardId, role);
+    const roleIcon = document.getElementById(`role-icon-${cardId}`);
+    if (roleIcon && window.selectedColors[cardId]) {
+        roleIcon.src = roleIcons[role];
+        roleIcon.style.display = 'block';
+        roleIcon.classList.remove('animate');
+        setTimeout(() => {
+            roleIcon.classList.add('animate');
+        }, 10);
     }
 };
 
 window.setCardStatus = function(cardId, status) {
     const card = document.getElementById(`card-${cardId}`);
     const statusIcon = document.getElementById(`status-icon-${cardId}`);
+    const nameElements = window.nameElements || {};
     const nameElement = nameElements[cardId];
     const roleIcon = document.getElementById(`role-icon-${cardId}`);
     const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
     
+    if (!card) return;
+    
     // Сохраняем текущее состояние видимости иконки черной карты
-    const wasBlackCardIconVisible = blackCardIcon.style.display === 'block';
+    const wasBlackCardIconVisible = blackCardIcon && blackCardIcon.style.display === 'block';
     
     // Устанавливаем статус
     card.classList.remove('voted', 'shot', 'removed');
-    nameElement.classList.remove('voted', 'shot', 'removed');
-    if (roleIcon.style.display === 'block') {
+    if (nameElement) {
+        nameElement.classList.remove('voted', 'shot', 'removed');
+    }
+    if (roleIcon && roleIcon.style.display === 'block') {
         roleIcon.classList.remove('voted', 'shot', 'removed');
     }
     
     if (status === 'voted') {
         card.classList.add('voted');
-        nameElement.classList.add('voted');
-        if (roleIcon.style.display === 'block') roleIcon.classList.add('voted');
+        if (nameElement) nameElement.classList.add('voted');
+        if (roleIcon && roleIcon.style.display === 'block') roleIcon.classList.add('voted');
     } else if (status === 'shot') {
         card.classList.add('shot');
-        nameElement.classList.add('shot');
-        if (roleIcon.style.display === 'block') roleIcon.classList.add('shot');
+        if (nameElement) nameElement.classList.add('shot');
+        if (roleIcon && roleIcon.style.display === 'block') roleIcon.classList.add('shot');
     } else if (status === 'removed') {
         card.classList.add('removed');
-        nameElement.classList.add('removed');
-        if (roleIcon.style.display === 'block') roleIcon.classList.add('removed');
+        if (nameElement) nameElement.classList.add('removed');
+        if (roleIcon && roleIcon.style.display === 'block') roleIcon.classList.add('removed');
     }
     
     // Устанавливаем иконку статуса
-    statusIcon.src = statusIcons[status];
-    statusIcon.style.display = 'block';
+    if (statusIcon) {
+        statusIcon.src = statusIcons[status];
+        statusIcon.style.display = 'block';
+    }
     
     // Восстанавливаем иконку черной карты
-    if (wasBlackCardIconVisible) {
+    if (wasBlackCardIconVisible && blackCardIcon) {
         blackCardIcon.style.display = 'block';
         blackCardIcon.classList.remove('voted', 'shot', 'removed');
         blackCardIcon.classList.add(status);
@@ -726,38 +882,157 @@ window.setMafiaCard = function(cardId, cardType, visible) {
         } else {
             mafiaCard.style.display = 'none';
         }
-        selectedMafiaCards[cardId][cardType] = visible;
     }
 };
 
-window.resetSingleCard = resetSingleCard;
-
-// Сделаем некоторые переменные глобальными для доступа
-window.nameElements = nameElements;
-window.selectedRoles = selectedRoles;
-window.selectedColors = selectedColors;
-window.hasColorSelected = hasColorSelected;
-
-
-
-    // Добавляем обработчики для кнопок сброса отдельных плашек
-    const resetCardButtons = document.querySelectorAll('.reset-card-button');
-
-    resetCardButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const cardId = this.getAttribute('data-card');
-            resetSingleCard(cardId);
-        });
+window.resetSingleCard = function(cardId) {
+    const card = document.getElementById(`card-${cardId}`);
+    if (!card) return;
+    
+    const defaultImage = card.querySelector('.default-image');
+    const roleIcon = document.getElementById(`role-icon-${cardId}`);
+    const statusIcon = document.getElementById(`status-icon-${cardId}`);
+    const nameElements = window.nameElements || {};
+    const nameElement = nameElements[cardId];
+    const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
+    
+    // Сбрасываем изображение по умолчанию
+    if (defaultImage) {
+        defaultImage.src = `${DEFAULT_IMAGE_PATH}.png`;
+        defaultImage.style.display = 'block';
+    }
+    
+    // Сбрасываем состояние статуса
+    card.classList.remove('voted', 'shot', 'removed');
+    if (nameElement) {
+        nameElement.classList.remove('voted', 'shot', 'removed');
+        nameElement.textContent = '';
+        nameElement.style.display = 'none';
+    }
+    if (roleIcon) {
+        roleIcon.classList.remove('voted', 'shot', 'removed');
+        roleIcon.style.display = 'none';
+    }
+    if (blackCardIcon) {
+        blackCardIcon.classList.remove('voted', 'shot', 'removed');
+        blackCardIcon.style.display = 'none';
+    }
+    
+    // Сбрасываем роль в глобальном состоянии
+    if (window.selectedRoles[cardId]) {
+        const previousRole = window.selectedRoles[cardId];
+        if (previousRole === 'sheriff') window.sheriffCount--;
+        else if (previousRole === 'don') window.donCount--;
+        delete window.selectedRoles[cardId];
+    }
+    
+    // Сбрасываем цвет в глобальном состоянии
+    window.selectedColors[cardId] = null;
+    
+    // Сбрасываем статус
+    if (statusIcon) {
+        statusIcon.style.display = 'none';
+    }
+    
+    // Сбрасываем карточки мафии
+    const mafiaCards = card.querySelectorAll('.mafia-card');
+    mafiaCards.forEach(card => {
+        card.style.display = 'none';
     });
+    
+    // Запускаем анимацию сброса
+    card.classList.remove('animate');
+    setTimeout(() => {
+        card.classList.add('animate');
+    }, 10);
+};
 
-    // Добавляем обработчик для кнопки сброса всех плашек
-    document.getElementById('reset-button').addEventListener('click', function() {
-        // Сбрасываем все плашки по одной
-        for (let i = 1; i <= 10; i++) {
-            resetSingleCard(i);
+// ДОБАВЛЕНО: Глобальные функции для проверок
+window.canSelectColor = function(cardId, color) {
+    const errorElement = document.getElementById('role-error');
+    const currentRole = window.selectedRoles[cardId];
+    
+    if (currentRole === 'sheriff' && color === 'black') {
+        if (errorElement) {
+            errorElement.textContent = 'Шериф не может быть черной картой!';
+            errorElement.style.display = 'block';
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 3000);
         }
-        
-        // Скрываем сообщение об ошибке
-        document.getElementById('role-error').style.display = 'none';
-    });
-});
+        return false;
+    }
+    
+    if (currentRole === 'don' && color === 'red') {
+        if (errorElement) {
+            errorElement.textContent = 'Дон не может быть красной картой!';
+            errorElement.style.display = 'block';
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 3000);
+        }
+        return false;
+    }
+    
+    if (errorElement) {
+        errorElement.style.display = 'none';
+    }
+    return true;
+};
+
+window.canAssignRole = function(role, cardId) {
+    const errorElement = document.getElementById('role-error');
+    
+    if (role === 'sheriff') {
+        if (window.sheriffCount > 0 && window.selectedRoles[cardId] !== 'sheriff') {
+            if (errorElement) {
+                errorElement.textContent = 'Шериф уже выбран! Можно выбрать только одного шерифа.';
+                errorElement.style.display = 'block';
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 3000);
+            }
+            return false;
+        }
+    } else if (role === 'don') {
+        if (window.donCount > 0 && window.selectedRoles[cardId] !== 'don') {
+            if (errorElement) {
+                errorElement.textContent = 'Дон уже выбран! Можно выбрать только одного дона.';
+                errorElement.style.display = 'block';
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 3000);
+            }
+            return false;
+        }
+    }
+    
+    const currentColor = window.selectedColors[cardId];
+    if (currentColor) {
+        if (role === 'sheriff' && currentColor === 'black') {
+            if (errorElement) {
+                errorElement.textContent = 'Шериф не может быть черной картой! Сначала измените цвет карты.';
+                errorElement.style.display = 'block';
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 3000);
+            }
+            return false;
+        }
+        if (role === 'don' && currentColor === 'red') {
+            if (errorElement) {
+                errorElement.textContent = 'Дон не может быть красной картой! Сначала измените цвет карты.';
+                errorElement.style.display = 'block';
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 3000);
+            }
+            return false;
+        }
+    }
+    
+    if (errorElement) {
+        errorElement.style.display = 'none';
+    }
+    return true;
+};
