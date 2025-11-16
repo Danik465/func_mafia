@@ -294,119 +294,119 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Функция для сброса отдельной плашки
     function resetSingleCard(cardId) {
-        const card = document.getElementById(`card-${cardId}`);
-        if (!card) return;
-        
-        const defaultImage = card.querySelector('.default-image');
-        const roleIcon = document.getElementById(`role-icon-${cardId}`);
-        const statusIcon = document.getElementById(`status-icon-${cardId}`);
-        const nameElement = nameElements[cardId];
-        const nameInput = document.querySelector(`.name-input[data-card="${cardId}"]`);
-        const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
-        
-        // ДОБАВЛЕНО: Сбрасываем выделение кнопок статуса
-        const statusButtons = document.querySelectorAll(`.status-button[data-card="${cardId}"]`);
-        statusButtons.forEach(btn => btn.classList.remove('selected'));
+    const card = document.getElementById(`card-${cardId}`);
+    if (!card) return;
+    
+    const defaultImage = card.querySelector('.default-image');
+    const roleIcon = document.getElementById(`role-icon-${cardId}`);
+    const statusIcon = document.getElementById(`status-icon-${cardId}`);
+    const nameElement = nameElements[cardId];
+    const nameInput = document.querySelector(`.name-input[data-card="${cardId}"]`);
+    const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
+    
+    // ДОБАВЛЕНО: Сбрасываем выделение кнопок статуса
+    const statusButtons = document.querySelectorAll(`.status-button[data-card="${cardId}"]`);
+    statusButtons.forEach(btn => btn.classList.remove('selected'));
 
-        // Восстанавливаем номер плашки
-        const cardNumber = card.querySelector('.card-number');
-        if (cardNumber) {
-            cardNumber.textContent = cardId;
-        }
-
-        // Восстанавливаем изображение по умолчанию
-        if (defaultImage) {
-            defaultImage.src = `${DEFAULT_IMAGE_PATH}.png`;
-            defaultImage.style.display = 'block';
-        }
-        hasColorSelected[cardId] = false;
-
-        // ИСПРАВЛЕНИЕ: Сбрасываем выбранный цвет в глобальном состоянии
-        window.selectedColors[cardId] = null;
-
-        // Сбрасываем состояние статуса
-        card.classList.remove('voted', 'shot', 'removed');
-        if (nameElement) {
-            nameElement.classList.remove('voted', 'shot', 'removed');
-        }
-        if (roleIcon) {
-            roleIcon.classList.remove('voted', 'shot', 'removed');
-        }
-        if (blackCardIcon) {
-            blackCardIcon.classList.remove('voted', 'shot', 'removed');
-        }
-
-        // Сбрасываем имя
-        if (nameInput) {
-            nameInput.value = '';
-        }
-        if (nameElement) {
-            nameElement.textContent = '';
-            nameElement.style.display = 'none';
-        }
-        
-        // Сбрасываем роль в глобальном состоянии
-        if (window.selectedRoles[cardId]) {
-            const previousRole = window.selectedRoles[cardId];
-            if (previousRole === 'sheriff') {
-                window.sheriffCount--;
-            } else if (previousRole === 'don') {
-                window.donCount--;
-            }
-            delete window.selectedRoles[cardId];
-        }
-        if (roleIcon) {
-            roleIcon.style.display = 'none';
-            roleIcon.classList.remove('animate', 'voted', 'shot', 'removed');
-        }
-        
-        // Сбрасываем статус
-        if (statusIcon) {
-            statusIcon.style.display = 'none';
-        }
-        
-        // Сбрасываем карточки мафии
-        const mafiaCards = card.querySelectorAll('.mafia-card');
-        mafiaCards.forEach(card => {
-            card.style.display = 'none';
-        });
-        
-        // Сбрасываем состояние карточек мафии
-        selectedMafiaCards[cardId] = {
-            red: false,
-            gray: 0, // ИЗМЕНЕНО: сбрасываем счетчик серых карточек
-            yellow: false
-        };
-        
-        // ДОБАВЛЕНО: Сбрасываем счетчик серых карточек
-        window.grayCardsCount[cardId] = 0;
-        const grayCounter = document.getElementById(`gray-counter-${cardId}`);
-        if (grayCounter) {
-            grayCounter.textContent = '0';
-            grayCounter.style.display = 'none';
-        }
-        
-        // Сбрасываем иконку черной карты
-        if (blackCardIcon) {
-            blackCardIcon.style.display = 'none';
-            blackCardIcon.classList.remove('animate', 'voted', 'shot', 'removed');
-        }
-        
-        // Снимаем выделение со всех кнопок, связанных с этой плашкой
-        const allButtonsForCard = document.querySelectorAll(`
-            .control-button[data-card="${cardId}"],
-            .role-button[data-card="${cardId}"],
-            .status-button[data-card="${cardId}"],
-            .card-button[data-card="${cardId}"]
-        `);
-        allButtonsForCard.forEach(button => button.classList.remove('selected'));
-        
-        // Запускаем анимацию сброса
-        card.classList.remove('animate');
-        setTimeout(() => {
-            card.classList.add('animate');
-        }, 10);
+    // Восстанавливаем номер плашки
+    const cardNumber = card.querySelector('.card-number');
+    if (cardNumber) {
+        cardNumber.textContent = cardId;
     }
+
+    // Восстанавливаем изображение по умолчанию
+    if (defaultImage) {
+        defaultImage.src = `${DEFAULT_IMAGE_PATH}.png`;
+        defaultImage.style.display = 'block';
+    }
+    hasColorSelected[cardId] = false;
+
+    // ИСПРАВЛЕНИЕ: Сбрасываем выбранный цвет в глобальном состоянии
+    window.selectedColors[cardId] = null;
+
+    // Сбрасываем состояние статуса
+    removeStatus(cardId);
+
+    // Сбрасываем имя
+    if (nameInput) {
+        nameInput.value = '';
+    }
+    if (nameElement) {
+        nameElement.textContent = '';
+        nameElement.style.display = 'none';
+    }
+    
+    // ИСПРАВЛЕНИЕ: Сбрасываем роль в глобальном состоянии
+    if (window.selectedRoles && window.selectedRoles[cardId]) {
+        const previousRole = window.selectedRoles[cardId];
+        if (previousRole === 'sheriff') {
+            window.sheriffCount = Math.max(0, window.sheriffCount - 1);
+        } else if (previousRole === 'don') {
+            window.donCount = Math.max(0, window.donCount - 1);
+        }
+        delete window.selectedRoles[cardId];
+    }
+    
+    if (roleIcon) {
+        roleIcon.style.display = 'none';
+        roleIcon.classList.remove('animate');
+    }
+    
+    // Сбрасываем статус
+    if (statusIcon) {
+        statusIcon.style.display = 'none';
+    }
+    
+    // Сбрасываем карточки мафии
+    const mafiaCards = card.querySelectorAll('.mafia-card');
+    mafiaCards.forEach(card => {
+        card.style.display = 'none';
+    });
+    
+    // Сбрасываем состояние карточек мафии
+    selectedMafiaCards[cardId] = {
+        red: false,
+        gray: 0,
+        yellow: false
+    };
+    
+    // ДОБАВЛЕНО: Сбрасываем счетчик серых карточек
+    if (window.grayCardsCount) {
+        window.grayCardsCount[cardId] = 0;
+    }
+    const grayCounter = document.getElementById(`gray-counter-${cardId}`);
+    if (grayCounter) {
+        grayCounter.textContent = '0';
+        grayCounter.style.display = 'none';
+    }
+    
+    // Сбрасываем иконку черной карты
+    if (blackCardIcon) {
+        blackCardIcon.style.display = 'none';
+        blackCardIcon.classList.remove('animate');
+    }
+    
+    // Снимаем выделение со всех кнопок, связанных с этой плашкой
+    const allButtonsForCard = document.querySelectorAll(`
+        .control-button[data-card="${cardId}"],
+        .role-button[data-card="${cardId}"],
+        .status-button[data-card="${cardId}"],
+        .card-button[data-card="${cardId}"]
+    `);
+    allButtonsForCard.forEach(button => {
+        button.classList.remove('selected');
+        // ИСПРАВЛЕНИЕ: Восстанавливаем текст серых кнопок
+        if (button.classList.contains('gray')) {
+            button.textContent = 'Серая';
+        }
+    });
+    
+    // Запускаем анимацию сброса
+    card.classList.remove('animate');
+    setTimeout(() => {
+        card.classList.add('animate');
+    }, 10);
+}
 
     // Инициализация плашек
     initializeCards();
@@ -809,16 +809,39 @@ window.setCardColor = function(cardId, color) {
 
 window.setCardRole = function(cardId, role) {
     const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
+    const roleIcon = document.getElementById(`role-icon-${cardId}`);
+    
+    // ИСПРАВЛЕНИЕ: Если роль null, снимаем роль
+    if (!role) {
+        // Скрываем иконку роли
+        if (roleIcon) {
+            roleIcon.style.display = 'none';
+        }
+        
+        // Если цвет плашки черный и нет роли дона, показываем иконку черной карты
+        if (hasColorSelected[cardId] && window.selectedColors[cardId] === 'black' && blackCardIcon) {
+            blackCardIcon.style.display = 'block';
+            animateBlackCardIcon(cardId);
+        }
+        
+        // Удаляем роль из глобального состояния
+        if (window.selectedRoles) {
+            delete window.selectedRoles[cardId];
+        }
+        return;
+    }
     
     // Убираем предыдущую роль
-    if (window.selectedRoles[cardId]) {
+    if (window.selectedRoles && window.selectedRoles[cardId]) {
         const previousRole = window.selectedRoles[cardId];
         if (previousRole === 'sheriff') window.sheriffCount--;
         else if (previousRole === 'don') window.donCount--;
     }
     
     // Сохраняем новую роль
-    window.selectedRoles[cardId] = role;
+    if (window.selectedRoles) {
+        window.selectedRoles[cardId] = role;
+    }
     updateRoleCounters();
     
     // Показываем/скрываем иконки
@@ -844,6 +867,12 @@ window.setCardStatus = function(cardId, status) {
     const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
     
     if (!card) return;
+    
+    // ДОБАВЛЕНО: Если статус null, снимаем все статусы
+    if (!status) {
+        removeStatus(cardId);
+        return;
+    }
     
     // Сохраняем текущее состояние видимости иконки черной карты
     const wasBlackCardIconVisible = blackCardIcon && blackCardIcon.style.display === 'block';
@@ -881,7 +910,9 @@ window.setCardStatus = function(cardId, status) {
     if (wasBlackCardIconVisible && blackCardIcon) {
         blackCardIcon.style.display = 'block';
         blackCardIcon.classList.remove('voted', 'shot', 'removed');
-        blackCardIcon.classList.add(status);
+        if (status) {
+            blackCardIcon.classList.add(status);
+        }
     }
 };
 
@@ -1120,3 +1151,43 @@ window.canAssignRole = function(role, cardId) {
         });
     }
 });
+// Глобальная функция для снятия статуса
+window.removeStatus = function(cardId) {
+    const card = document.getElementById(`card-${cardId}`);
+    const statusIcon = document.getElementById(`status-icon-${cardId}`);
+    const nameElements = window.nameElements || {};
+    const nameElement = nameElements[cardId];
+    const roleIcon = document.getElementById(`role-icon-${cardId}`);
+    const blackCardIcon = document.getElementById(`black-card-icon-${cardId}`);
+    
+    if (!card) return;
+    
+    // Снимаем статус с плашки
+    card.classList.remove('voted', 'shot', 'removed');
+    
+    // Снимаем статус с имени игрока
+    if (nameElement) {
+        nameElement.classList.remove('voted', 'shot', 'removed');
+    }
+    
+    // Снимаем статус с иконки роли
+    if (roleIcon) {
+        roleIcon.classList.remove('voted', 'shot', 'removed');
+    }
+    
+    // Снимаем статус с иконки черной карты
+    if (blackCardIcon) {
+        blackCardIcon.classList.remove('voted', 'shot', 'removed');
+    }
+    
+    // Скрываем иконку статуса
+    if (statusIcon) {
+        statusIcon.style.display = 'none';
+    }
+    
+    // Запускаем анимацию возврата плашки в исходное положение
+    card.classList.remove('animate');
+    setTimeout(() => {
+        card.classList.add('animate');
+    }, 10);
+};

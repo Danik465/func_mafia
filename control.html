@@ -228,7 +228,16 @@
 
     <script src="scripts/scripts.js"></script>
     <script>
-        // ДОБАВЛЕНО: Инициализация глобальных переменных в control.html
+// В control.html ЗАМЕНИТЕ весь блок скрипта на этот:
+
+let ws;
+let isAuthorized = false;
+
+// Автоматически определяет адрес WebSocket
+const proto = location.protocol === "https:" ? "wss:" : "ws:";
+const WS_URL = proto + "//" + location.host;
+
+// ДОБАВЛЕНО: Инициализация глобальных переменных в control.html
 window.selectedRoles = {};
 window.selectedColors = {};
 window.sheriffCount = 0;
@@ -271,120 +280,112 @@ window.canSelectColor = function(cardId, color) {
 window.canAssignRole = function(role, cardId) {
     const errorElement = document.getElementById('role-error');
     
-        if (role === 'sheriff') {
-            if (window.sheriffCount > 0 && window.selectedRoles[cardId] !== 'sheriff') {
-                if (errorElement) {
-                    errorElement.textContent = 'Шериф уже выбран! Можно выбрать только одного шерифа.';
-                    errorElement.style.display = 'block';
-                    setTimeout(() => {
-                        errorElement.style.display = 'none';
-                    }, 3000);
-                }
-                return false;
+    if (role === 'sheriff') {
+        if (window.sheriffCount > 0 && window.selectedRoles[cardId] !== 'sheriff') {
+            if (errorElement) {
+                errorElement.textContent = 'Шериф уже выбран! Можно выбрать только одного шерифа.';
+                errorElement.style.display = 'block';
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 3000);
             }
-        } else if (role === 'don') {
-            if (window.donCount > 0 && window.selectedRoles[cardId] !== 'don') {
-                if (errorElement) {
-                    errorElement.textContent = 'Дон уже выбран! Можно выбрать только одного дона.';
-                    errorElement.style.display = 'block';
-                    setTimeout(() => {
-                        errorElement.style.display = 'none';
-                    }, 3000);
-                }
-                return false;
-            }
+            return false;
         }
-        
-        const currentColor = window.selectedColors[cardId];
-        if (currentColor) {
-            if (role === 'sheriff' && currentColor === 'black') {
-                if (errorElement) {
-                    errorElement.textContent = 'Шериф не может быть черной картой! Сначала измените цвет карты.';
-                    errorElement.style.display = 'block';
-                    setTimeout(() => {
-                        errorElement.style.display = 'none';
-                    }, 3000);
-                }
-                return false;
+    } else if (role === 'don') {
+        if (window.donCount > 0 && window.selectedRoles[cardId] !== 'don') {
+            if (errorElement) {
+                errorElement.textContent = 'Дон уже выбран! Можно выбрать только одного дона.';
+                errorElement.style.display = 'block';
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 3000);
             }
-            if (role === 'don' && currentColor === 'red') {
-                if (errorElement) {
-                    errorElement.textContent = 'Дон не может быть красной картой! Сначала измените цвет карты.';
-                    errorElement.style.display = 'block';
-                    setTimeout(() => {
-                        errorElement.style.display = 'none';
-                    }, 3000);
-                }
-                return false;
+            return false;
+        }
+    }
+    
+    const currentColor = window.selectedColors[cardId];
+    if (currentColor) {
+        if (role === 'sheriff' && currentColor === 'black') {
+            if (errorElement) {
+                errorElement.textContent = 'Шериф не может быть черной картой! Сначала измените цвет карты.';
+                errorElement.style.display = 'block';
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 3000);
             }
+            return false;
         }
-        
-        if (errorElement) {
-            errorElement.style.display = 'none';
+        if (role === 'don' && currentColor === 'red') {
+            if (errorElement) {
+                errorElement.textContent = 'Дон не может быть красной картой! Сначала измените цвет карты.';
+                errorElement.style.display = 'block';
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 3000);
+            }
+            return false;
         }
-        return true;
+    }
+    
+    if (errorElement) {
+        errorElement.style.display = 'none';
+    }
+    return true;
+};
+
+function connect() {
+    ws = new WebSocket(WS_URL);
+    
+    ws.onopen = () => {
+        const token = document.getElementById('token').value;
+        ws.send(JSON.stringify({ type: "auth", token }));
+        updateStatus('connecting', 'Подключается...');
     };
 
-
-        let ws;
-        let isAuthorized = false;
-
-        // Автоматически определяет адрес WebSocket
-        const proto = location.protocol === "https:" ? "wss:" : "ws:";
-        const WS_URL = proto + "//" + location.host;
-
-        function connect() {
-            ws = new WebSocket(WS_URL);
-            
-            ws.onopen = () => {
-                const token = document.getElementById('token').value;
-                ws.send(JSON.stringify({ type: "auth", token }));
-                updateStatus('connecting', 'Подключается...');
-            };
-
-            ws.onmessage = (e) => {
-                const data = JSON.parse(e.data);
-                
-                if (data.type === "auth_ok") {
-                    isAuthorized = true;
-                    updateStatus('connected', 'Подключено');
-                    initializeControls();
-                } else if (data.type === "auth_fail") {
-                    isAuthorized = false;
-                    updateStatus('error', 'Ошибка авторизации');
-                    alert("Неверный токен!");
-                } else if (data.type === "initial_state") {
-                    // Восстанавливаем состояние из сервера
-                    restoreState(data.state);
-                }
-            };
-
-            ws.onclose = () => {
-                isAuthorized = false;
-                updateStatus('disconnected', 'Не подключено');
-            };
-
-            ws.onerror = () => {
-                updateStatus('error', 'Ошибка подключения');
-            };
+    ws.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        
+        if (data.type === "auth_ok") {
+            isAuthorized = true;
+            updateStatus('connected', 'Подключено');
+            initializeControls();
+        } else if (data.type === "auth_fail") {
+            isAuthorized = false;
+            updateStatus('error', 'Ошибка авторизации');
+            alert("Неверный токен!");
+        } else if (data.type === "initial_state") {
+            // Восстанавливаем состояние из сервера
+            restoreState(data.state);
         }
+    };
 
-        function updateStatus(status, text) {
-            const indicator = document.getElementById('status');
-            const statusText = document.getElementById('status-text');
-            
-            // Обновляем цвета статуса
-            const statusColors = {
-                connected: '#2ecc71',
-                disconnected: '#e74c3c',
-                error: '#e74c3c',
-                connecting: '#f39c12'
-            };
-            indicator.style.background = statusColors[status] || '#e74c3c';
-            statusText.textContent = text;
-        }
+    ws.onclose = () => {
+        isAuthorized = false;
+        updateStatus('disconnected', 'Не подключено');
+    };
 
- function restoreState(state) {
+    ws.onerror = () => {
+        updateStatus('error', 'Ошибка подключения');
+    };
+}
+
+function updateStatus(status, text) {
+    const indicator = document.getElementById('status');
+    const statusText = document.getElementById('status-text');
+    
+    // Обновляем цвета статуса
+    const statusColors = {
+        connected: '#2ecc71',
+        disconnected: '#e74c3c',
+        error: '#e74c3c',
+        connecting: '#f39c12'
+    };
+    indicator.style.background = statusColors[status] || '#e74c3c';
+    statusText.textContent = text;
+}
+
+function restoreState(state) {
     // ИСПРАВЛЕНИЕ: Полностью сбрасываем глобальное состояние перед восстановлением
     window.selectedRoles = {};
     window.selectedColors = {};
@@ -452,239 +453,263 @@ window.canAssignRole = function(role, cardId) {
     }
 }
 
-        function initializeControls() {
-            // Добавляем обработчики для всех элементов управления
-            document.querySelectorAll('.name-input').forEach(input => {
-                input.addEventListener('input', function() {
-                    if (!isAuthorized) return alert("Сначала авторизуйтесь!");
-                    const cardId = this.getAttribute('data-card');
-                    ws.send(JSON.stringify({ 
-                        type: "set_name", 
-                        cardId: parseInt(cardId), 
-                        name: this.value 
-                    }));
-                });
-            });
+function initializeControls() {
+    // Добавляем обработчики для всех элементов управления
+    document.querySelectorAll('.name-input').forEach(input => {
+        input.addEventListener('input', function() {
+            if (!isAuthorized) return alert("Сначала авторизуйтесь!");
+            const cardId = this.getAttribute('data-card');
+            ws.send(JSON.stringify({ 
+                type: "set_name", 
+                cardId: parseInt(cardId), 
+                name: this.value 
+            }));
+        });
+    });
 
-            /// Обработчики для кнопок цвета
-            document.querySelectorAll('.control-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    if (!isAuthorized) return alert("Сначала авторизуйтесь!");
-                    const cardId = this.getAttribute('data-card');
-                    const color = this.getAttribute('data-color');
-                    
-                    // ИСПРАВЛЕНИЕ: Проверка перед отправкой
-                    if (!window.canSelectColor(cardId, color)) {
-                        return;
-                    }
+    // Обработчики для кнопок цвета
+    document.querySelectorAll('.control-button').forEach(button => {
+        button.addEventListener('click', function() {
+            if (!isAuthorized) return alert("Сначала авторизуйтесь!");
+            const cardId = this.getAttribute('data-card');
+            const color = this.getAttribute('data-color');
+            
+            // ИСПРАВЛЕНИЕ: Проверка перед отправкой
+            if (!window.canSelectColor(cardId, color)) {
+                return;
+            }
 
-                    // Убираем выделение с всех кнопок для этой плашки
-                    const allButtonsForCard = document.querySelectorAll(`.control-button[data-card="${cardId}"]`);
-                    allButtonsForCard.forEach(btn => btn.classList.remove('selected'));
-                    
-                    // Добавляем выделение на clicked кнопку
-                    this.classList.add('selected');
-                    
-                    // ИСПРАВЛЕНИЕ: Обновляем глобальное состояние
-                    window.selectedColors[cardId] = color;
-                    
-                    ws.send(JSON.stringify({ 
-                        type: "set_color", 
-                        cardId: parseInt(cardId), 
-                        color: color 
-                    }));
-                });
-            });
+            // Убираем выделение с всех кнопок для этой плашки
+            const allButtonsForCard = document.querySelectorAll(`.control-button[data-card="${cardId}"]`);
+            allButtonsForCard.forEach(btn => btn.classList.remove('selected'));
+            
+            // Добавляем выделение на clicked кнопку
+            this.classList.add('selected');
+            
+            // ИСПРАВЛЕНИЕ: Обновляем глобальное состояние
+            window.selectedColors[cardId] = color;
+            
+            ws.send(JSON.stringify({ 
+                type: "set_color", 
+                cardId: parseInt(cardId), 
+                color: color 
+            }));
+        });
+    });
 
-            /// Обработчики для кнопок ролей
-            document.querySelectorAll('.role-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    if (!isAuthorized) return alert("Сначала авторизуйтесь!");
-                    const cardId = this.getAttribute('data-card');
-                    const role = this.getAttribute('data-role');
-                    const isSelected = this.classList.contains('selected');
-                    
-                    // ИСПРАВЛЕНИЕ: Если кнопка уже выбрана, снимаем выделение и удаляем роль
-                    if (isSelected) {
-                        this.classList.remove('selected');
-                        
-                        // Удаляем роль из глобального состояния
-                        if (window.selectedRoles[cardId]) {
-                            const previousRole = window.selectedRoles[cardId];
-                            if (previousRole === 'sheriff') window.sheriffCount--;
-                            else if (previousRole === 'don') window.donCount--;
-                            delete window.selectedRoles[cardId];
-                        }
-                        
-                        // Отправляем команду на сервер для снятия роли
-                        ws.send(JSON.stringify({ 
-                            type: "set_role", 
-                            cardId: parseInt(cardId), 
-                            role: null 
-                        }));
-                    } else {
-                        // ИСПРАВЛЕНИЕ: Проверка перед отправкой
-                        if (!window.canAssignRole(role, cardId)) {
-                            return;
-                        }
-
-                        // Убираем выделение с всех кнопок ролей для этой плашки
-                        const allRoleButtonsForCard = document.querySelectorAll(`.role-button[data-card="${cardId}"]`);
-                        allRoleButtonsForCard.forEach(btn => btn.classList.remove('selected'));
-                        
-                        // Добавляем выделение на clicked кнопку
-                        this.classList.add('selected');
-                        
-                        // ИСПРАВЛЕНИЕ: Обновляем глобальное состояние
-                        if (window.selectedRoles[cardId]) {
-                            const previousRole = window.selectedRoles[cardId];
-                            if (previousRole === 'sheriff') window.sheriffCount--;
-                            else if (previousRole === 'don') window.donCount--;
-                        }
-                        
-                        window.selectedRoles[cardId] = role;
-                        if (role === 'sheriff') window.sheriffCount++;
-                        else if (role === 'don') window.donCount++;
-                        
-                        ws.send(JSON.stringify({ 
-                            type: "set_role", 
-                            cardId: parseInt(cardId), 
-                            role: role 
-                        }));
-                    }
-                });
-            });
-
-            // Обработчики для кнопок статусов
-            document.querySelectorAll('.status-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    if (!isAuthorized) return alert("Сначала авторизуйтесь!");
-                    const cardId = this.getAttribute('data-card');
-                    const status = this.getAttribute('data-status');
-                    
-                    // Убираем выделение с всех кнопок статусов для этой плашки
-                    const allStatusButtonsForCard = document.querySelectorAll(`.status-button[data-card="${cardId}"]`);
-                    allStatusButtonsForCard.forEach(btn => btn.classList.remove('selected'));
-                    
-                    // Добавляем выделение на clicked кнопку
-                    this.classList.add('selected');
-                    
-                    ws.send(JSON.stringify({ 
-                        type: "set_status", 
-                        cardId: parseInt(cardId), 
-                        status: status 
-                    }));
-                });
-            });
-
-            // Обработчики для карточек мафии
-           document.querySelectorAll('.card-button').forEach(button => {
+    // Обработчики для кнопок ролей
+    document.querySelectorAll('.role-button').forEach(button => {
     button.addEventListener('click', function() {
         if (!isAuthorized) return alert("Сначала авторизуйтесь!");
         const cardId = this.getAttribute('data-card');
-        const cardType = this.getAttribute('data-card-type');
+        const role = this.getAttribute('data-role');
         const isSelected = this.classList.contains('selected');
         
-        // ДОБАВЛЕНО: Специальная логика для серых карточек
-        if (cardType === 'gray') {
-            if (!window.grayCardsCount[cardId]) {
-                window.grayCardsCount[cardId] = 0;
+        // ИСПРАВЛЕНИЕ: Если кнопка уже выбрана, снимаем выделение и удаляем роль
+        if (isSelected) {
+            this.classList.remove('selected');
+            
+            // Удаляем роль из глобального состояния
+            if (window.selectedRoles[cardId]) {
+                const previousRole = window.selectedRoles[cardId];
+                if (previousRole === 'sheriff') window.sheriffCount--;
+                else if (previousRole === 'don') window.donCount--;
+                delete window.selectedRoles[cardId];
             }
             
-            window.grayCardsCount[cardId] = (window.grayCardsCount[cardId] + 1) % 4;
-            const newCount = window.grayCardsCount[cardId];
-            
-            // Обновляем внешний вид кнопки
-            if (newCount > 0) {
-                this.classList.add('selected');
-                // ДОБАВЛЕНО: Показываем количество на кнопке
-                this.textContent = newCount >= 2 ? `Серая (${newCount})` : 'Серая';
-            } else {
-                this.classList.remove('selected');
-                this.textContent = 'Серая';
-            }
-            
-            // Отправляем на сервер
+            // Отправляем команду на сервер для снятия роли
             ws.send(JSON.stringify({ 
-                type: "set_mafia_card", 
+                type: "set_role", 
                 cardId: parseInt(cardId), 
-                cardType: cardType,
-                visible: newCount
+                role: null 
             }));
         } else {
-            // Для красных и желтых карточек - стандартная логика
-            // Переключаем выделение
-            if (isSelected) {
-                this.classList.remove('selected');
-            } else {
-                this.classList.add('selected');
+            // ИСПРАВЛЕНИЕ: Проверка перед отправкой
+            if (!window.canAssignRole(role, cardId)) {
+                return;
+            }
+
+            // Убираем выделение с всех кнопок ролей для этой плашки
+            const allRoleButtonsForCard = document.querySelectorAll(`.role-button[data-card="${cardId}"]`);
+            allRoleButtonsForCard.forEach(btn => btn.classList.remove('selected'));
+            
+            // Добавляем выделение на clicked кнопку
+            this.classList.add('selected');
+            
+            // ИСПРАВЛЕНИЕ: Обновляем глобальное состояние
+            if (window.selectedRoles[cardId]) {
+                const previousRole = window.selectedRoles[cardId];
+                if (previousRole === 'sheriff') window.sheriffCount--;
+                else if (previousRole === 'don') window.donCount--;
             }
             
+            window.selectedRoles[cardId] = role;
+            if (role === 'sheriff') window.sheriffCount++;
+            else if (role === 'don') window.donCount++;
+            
             ws.send(JSON.stringify({ 
-                type: "set_mafia_card", 
+                type: "set_role", 
                 cardId: parseInt(cardId), 
-                cardType: cardType,
-                visible: !isSelected
+                role: role 
             }));
         }
     });
 });
 
-            // Обработчики для сброса отдельных плашек
-            document.querySelectorAll('.reset-card-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    if (!isAuthorized) return alert("Сначала авторизуйтесь!");
-                    const cardId = this.getAttribute('data-card');
-                    
-                    // ДОБАВЛЕНО: Сбрасываем глобальное состояние
-                    if (window.selectedRoles[cardId]) {
-                        const previousRole = window.selectedRoles[cardId];
-                        if (previousRole === 'sheriff') window.sheriffCount--;
-                        else if (previousRole === 'don') window.donCount--;
-                        delete window.selectedRoles[cardId];
-                    }
-                    window.selectedColors[cardId] = null;
-                    
-                    // Сбрасываем выделение кнопок
-                    const allButtonsForCard = document.querySelectorAll(`
-                        .control-button[data-card="${cardId}"],
-                        .role-button[data-card="${cardId}"],
-                        .status-button[data-card="${cardId}"],
-                        .card-button[data-card="${cardId}"]
-                    `);
-                    allButtonsForCard.forEach(btn => btn.classList.remove('selected'));
-                    
-                    ws.send(JSON.stringify({ 
-                        type: "reset_card", 
-                        cardId: parseInt(cardId)
-                    }));
-                });
-            });
+    // Обработчики для кнопок статусов - ИСПРАВЛЕННАЯ ЛОГИКА
+    document.querySelectorAll('.status-button').forEach(button => {
+        button.addEventListener('click', function() {
+            if (!isAuthorized) return alert("Сначала авторизуйтесь!");
+            const cardId = this.getAttribute('data-card');
+            const status = this.getAttribute('data-status');
+            const isSelected = this.classList.contains('selected');
+            
+            // ИСПРАВЛЕНИЕ: Если кнопка уже выбрана, снимаем статус
+            if (isSelected) {
+                this.classList.remove('selected');
+                // Отправляем null для снятия статуса
+                ws.send(JSON.stringify({ 
+                    type: "set_status", 
+                    cardId: parseInt(cardId), 
+                    status: null 
+                }));
+            } else {
+                // Убираем выделение с всех кнопок статусов для этой плашки
+                const allStatusButtonsForCard = document.querySelectorAll(`.status-button[data-card="${cardId}"]`);
+                allStatusButtonsForCard.forEach(btn => btn.classList.remove('selected'));
+                
+                // Добавляем выделение на clicked кнопку
+                this.classList.add('selected');
+                
+                ws.send(JSON.stringify({ 
+                    type: "set_status", 
+                    cardId: parseInt(cardId), 
+                    status: status 
+                }));
+            }
+        });
+    });
 
-            // Обработчик для сброса всех плашек
-            document.getElementById('reset-button').addEventListener('click', function() {
-                if (!isAuthorized) return alert("Сначала авторизуйтесь!");
-                
-                // ДОБАВЛЕНО: Сбрасываем все глобальное состояние
-                window.selectedRoles = {};
-                window.selectedColors = {};
-                window.sheriffCount = 0;
-                window.donCount = 0;
-                
-                // Сбрасываем все выделения
-                document.querySelectorAll('.control-button, .role-button, .status-button, .card-button').forEach(btn => {
-                    btn.classList.remove('selected');
-                });
-                
-                // Скрываем сообщение об ошибке
-                const errorElement = document.getElementById('role-error');
-                if (errorElement) {
-                    errorElement.style.display = 'none';
+    // Обработчики для карточек мафии
+    document.querySelectorAll('.card-button').forEach(button => {
+        button.addEventListener('click', function() {
+            if (!isAuthorized) return alert("Сначала авторизуйтесь!");
+            const cardId = this.getAttribute('data-card');
+            const cardType = this.getAttribute('data-card-type');
+            const isSelected = this.classList.contains('selected');
+            
+            // ДОБАВЛЕНО: Специальная логика для серых карточек
+            if (cardType === 'gray') {
+                if (!window.grayCardsCount[cardId]) {
+                    window.grayCardsCount[cardId] = 0;
                 }
                 
-                ws.send(JSON.stringify({ type: "reset_all" }));
+                window.grayCardsCount[cardId] = (window.grayCardsCount[cardId] + 1) % 4;
+                const newCount = window.grayCardsCount[cardId];
+                
+                // Обновляем внешний вид кнопки
+                if (newCount > 0) {
+                    this.classList.add('selected');
+                    // ДОБАВЛЕНО: Показываем количество на кнопке
+                    this.textContent = newCount >= 2 ? `Серая (${newCount})` : 'Серая';
+                } else {
+                    this.classList.remove('selected');
+                    this.textContent = 'Серая';
+                }
+                
+                // Отправляем на сервер
+                ws.send(JSON.stringify({ 
+                    type: "set_mafia_card", 
+                    cardId: parseInt(cardId), 
+                    cardType: cardType,
+                    visible: newCount
+                }));
+            } else {
+                // Для красных и желтых карточек - стандартная логика
+                // Переключаем выделение
+                if (isSelected) {
+                    this.classList.remove('selected');
+                } else {
+                    this.classList.add('selected');
+                }
+                
+                ws.send(JSON.stringify({ 
+                    type: "set_mafia_card", 
+                    cardId: parseInt(cardId), 
+                    cardType: cardType,
+                    visible: !isSelected
+                }));
+            }
+        });
+    });
+
+    // Обработчики для сброса отдельных плашек
+    document.querySelectorAll('.reset-card-button').forEach(button => {
+        button.addEventListener('click', function() {
+            if (!isAuthorized) return alert("Сначала авторизуйтесь!");
+            const cardId = this.getAttribute('data-card');
+            
+            // ДОБАВЛЕНО: Сбрасываем глобальное состояние
+            if (window.selectedRoles[cardId]) {
+                const previousRole = window.selectedRoles[cardId];
+                if (previousRole === 'sheriff') window.sheriffCount--;
+                else if (previousRole === 'don') window.donCount--;
+                delete window.selectedRoles[cardId];
+            }
+            delete window.selectedColors[cardId];
+            window.grayCardsCount[cardId] = 0;
+            
+            // Сбрасываем выделение кнопок
+            const allButtonsForCard = document.querySelectorAll(`
+                .control-button[data-card="${cardId}"],
+                .role-button[data-card="${cardId}"],
+                .status-button[data-card="${cardId}"],
+                .card-button[data-card="${cardId}"]
+            `);
+            allButtonsForCard.forEach(btn => {
+                btn.classList.remove('selected');
+                // ИСПРАВЛЕНИЕ: Восстанавливаем текст серой кнопки
+                if (btn.classList.contains('gray')) {
+                    btn.textContent = 'Серая';
+                }
             });
+            
+            ws.send(JSON.stringify({ 
+                type: "reset_card", 
+                cardId: parseInt(cardId)
+            }));
+        });
+    });
+
+    // Обработчик для сброса всех плашек
+    document.getElementById('reset-button').addEventListener('click', function() {
+        if (!isAuthorized) return alert("Сначала авторизуйтесь!");
+        
+        // ДОБАВЛЕНО: Сбрасываем все глобальное состояние
+        window.selectedRoles = {};
+        window.selectedColors = {};
+        window.sheriffCount = 0;
+        window.donCount = 0;
+        window.grayCardsCount = {};
+        
+        // Сбрасываем все выделения
+        document.querySelectorAll('.control-button, .role-button, .status-button, .card-button').forEach(btn => {
+            btn.classList.remove('selected');
+            // ИСПРАВЛЕНИЕ: Восстанавливаем текст серых кнопок
+            if (btn.classList.contains('gray')) {
+                btn.textContent = 'Серая';
+            }
+        });
+        
+        // Скрываем сообщение об ошибке
+        const errorElement = document.getElementById('role-error');
+        if (errorElement) {
+            errorElement.style.display = 'none';
         }
+        
+        ws.send(JSON.stringify({ type: "reset_all" }));
+    });
+}
     </script>
 </body>
 </html>
