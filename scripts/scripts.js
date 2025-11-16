@@ -30,6 +30,8 @@ window.selectedRoles = {};
 window.selectedColors = {};
 window.sheriffCount = 0;
 window.donCount = 0;
+// ДОБАВЛЕНО: Для хранения количества серых карточек
+window.grayCardsCount = {};
 
 document.addEventListener('DOMContentLoaded', function() {
     // Объект для хранения элементов с именами игроков
@@ -42,81 +44,101 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectedMafiaCards = {};
 
     // Функция для инициализации плашек
-function initializeCards() {
-    for (let i = 1; i <= 10; i++) {
-        const card = document.getElementById(`card-${i}`);
-        const defaultImage = card.querySelector('.default-image');
-        const blackCardIcon = document.getElementById(`black-card-icon-${i}`);
+    function initializeCards() {
+        for (let i = 1; i <= 10; i++) {
+            const card = document.getElementById(`card-${i}`);
+            const defaultImage = card.querySelector('.default-image');
+            const blackCardIcon = document.getElementById(`black-card-icon-${i}`);
 
-        // Проверяем существование элементов перед работой с ними
-        if (!card || !defaultImage || !blackCardIcon) {
-            console.warn(`Элементы для карточки ${i} не найдены, пропускаем`);
-            continue;
-        }
-
-        // Устанавливаем номер плашки
-        const cardNumber = card.querySelector('.card-number');
-        if (cardNumber) {
-            cardNumber.textContent = i;
-        }
-        
-        // Устанавливаем изображение по умолчанию
-        defaultImage.src = `${DEFAULT_IMAGE_PATH}.png`;
-        defaultImage.style.display = 'block';
-        hasColorSelected[i] = false;
-        
-        // Устанавливаем иконку черной карты
-        blackCardIcon.src = blackCardIconPath;
-        blackCardIcon.style.display = 'none';
-        
-        // Инициализируем объект для хранения карточек мафии
-        selectedMafiaCards[i] = {
-            red: false,
-            gray: false,
-            yellow: false
-        };
-        
-        // ИСПРАВЛЕНИЕ: Создаем элемент для отображения имени, если его еще нет
-        let nameElement = nameElements[i];
-        if (!nameElement) {
-            nameElement = document.createElement('div');
-            nameElement.className = 'player-name';
-            // ИСПРАВЛЕНИЕ: Добавляем имя в правильный контейнер
-            card.appendChild(nameElement);
-            nameElements[i] = nameElement;
-        }
-        
-        // Создаем контейнер для карточек мафии
-        let mafiaContainer = document.getElementById(`mafia-container-${i}`);
-        if (!mafiaContainer) {
-            mafiaContainer = document.createElement('div');
-            mafiaContainer.className = 'mafia-cards-container';
-            mafiaContainer.id = `mafia-container-${i}`;
-            card.appendChild(mafiaContainer);
-        }
-        
-        // Создаем три карточки разных цветов (изображения)
-        for (const cardType of ['red', 'gray', 'yellow']) {
-            const cardElementId = `mafia-card-${cardType}-${i}`;
-            let mafiaCard = document.getElementById(cardElementId);
-            
-            if (!mafiaCard) {
-                mafiaCard = document.createElement('img');
-                mafiaCard.className = 'mafia-card';
-                mafiaCard.id = cardElementId;
-                mafiaCard.src = mafiaCardImages[cardType];
-                mafiaCard.alt = `${cardType} card`;
-                mafiaCard.style.display = 'none';
-                mafiaContainer.appendChild(mafiaCard);
+            // Проверяем существование элементов перед работой с ними
+            if (!card || !defaultImage || !blackCardIcon) {
+                console.warn(`Элементы для карточки ${i} не найдены, пропускаем`);
+                continue;
             }
+
+            // Устанавливаем номер плашки
+            const cardNumber = card.querySelector('.card-number');
+            if (cardNumber) {
+                cardNumber.textContent = i;
+            }
+            
+            // Устанавливаем изображение по умолчанию
+            defaultImage.src = `${DEFAULT_IMAGE_PATH}.png`;
+            defaultImage.style.display = 'block';
+            hasColorSelected[i] = false;
+            
+            // Устанавливаем иконку черной карты
+            blackCardIcon.src = blackCardIconPath;
+            blackCardIcon.style.display = 'none';
+            
+            // Инициализируем объект для хранения карточек мафии
+            selectedMafiaCards[i] = {
+                red: false,
+                gray: 0, // ИЗМЕНЕНО: теперь храним количество серых карточек
+                yellow: false
+            };
+            
+            // ИСПРАВЛЕНИЕ: Создаем элемент для отображения имени, если его еще нет
+            let nameElement = nameElements[i];
+            if (!nameElement) {
+                nameElement = document.createElement('div');
+                nameElement.className = 'player-name';
+                // ИСПРАВЛЕНИЕ: Добавляем имя в правильный контейнер
+                card.appendChild(nameElement);
+                nameElements[i] = nameElement;
+            }
+            
+            // Создаем контейнер для карточек мафии
+            let mafiaContainer = document.getElementById(`mafia-container-${i}`);
+            if (!mafiaContainer) {
+                mafiaContainer = document.createElement('div');
+                mafiaContainer.className = 'mafia-cards-container';
+                mafiaContainer.id = `mafia-container-${i}`;
+                card.appendChild(mafiaContainer);
+            }
+            
+            // ИСПРАВЛЕНИЕ: Создаем три карточки разных цветов (изображения) с индивидуальными контейнерами
+            for (const cardType of ['red', 'gray', 'yellow']) {
+                // Создаем контейнер для каждой карточки
+                const cardWrapper = document.createElement('div');
+                cardWrapper.className = `mafia-card-wrapper mafia-card-wrapper-${cardType}`;
+                cardWrapper.id = `mafia-wrapper-${cardType}-${i}`;
+                
+                const cardElementId = `mafia-card-${cardType}-${i}`;
+                let mafiaCard = document.getElementById(cardElementId);
+                
+                if (!mafiaCard) {
+                    mafiaCard = document.createElement('img');
+                    mafiaCard.className = 'mafia-card';
+                    mafiaCard.id = cardElementId;
+                    mafiaCard.src = mafiaCardImages[cardType];
+                    mafiaCard.alt = `${cardType} card`;
+                    mafiaCard.style.display = 'none';
+                    
+                    // ДОБАВЛЕНО: Для серой карточки создаем отдельный контейнер со счетчиком
+                    if (cardType === 'gray') {
+                        const grayCounter = document.createElement('div');
+                        grayCounter.className = 'gray-card-counter';
+                        grayCounter.id = `gray-counter-${i}`;
+                        grayCounter.textContent = '0';
+                        grayCounter.style.display = 'none';
+                        
+                        cardWrapper.appendChild(mafiaCard);
+                        cardWrapper.appendChild(grayCounter);
+                    } else {
+                        cardWrapper.appendChild(mafiaCard);
+                    }
+                    
+                    mafiaContainer.appendChild(cardWrapper);
+                }
+            }
+            
+            // Запускаем анимацию появления плашки
+            setTimeout(() => {
+                card.classList.add('animate');
+            }, i * 100);
         }
-        
-        // Запускаем анимацию появления плашки
-        setTimeout(() => {
-            card.classList.add('animate');
-        }, i * 100);
     }
-}
 
     // Функция для проверки совместимости роли и цвета карточки
     function canSelectColor(cardId, color) {
@@ -352,9 +374,17 @@ function initializeCards() {
         // Сбрасываем состояние карточек мафии
         selectedMafiaCards[cardId] = {
             red: false,
-            gray: false,
+            gray: 0, // ИЗМЕНЕНО: сбрасываем счетчик серых карточек
             yellow: false
         };
+        
+        // ДОБАВЛЕНО: Сбрасываем счетчик серых карточек
+        window.grayCardsCount[cardId] = 0;
+        const grayCounter = document.getElementById(`gray-counter-${cardId}`);
+        if (grayCounter) {
+            grayCounter.textContent = '0';
+            grayCounter.style.display = 'none';
+        }
         
         // Сбрасываем иконку черной карты
         if (blackCardIcon) {
@@ -440,7 +470,6 @@ function initializeCards() {
 
         defaultImage.style.display = 'block';
         hasColorSelected[cardId] = true;
-        // ИСПРАВЛЕНИЕ: Сохраняем цвет в глобальном состоянии
         window.selectedColors[cardId] = color;
         
         // Если для этой плашки есть выбранная роль, показываем ее
@@ -641,26 +670,67 @@ function initializeCards() {
             const cardId = this.getAttribute('data-card');
             const cardType = this.getAttribute('data-card-type');
             const card = document.getElementById(`card-${cardId}`);
-            const mafiaCard = document.getElementById(`mafia-card-${cardType}-${cardId}`);
+            
+            // ИСПРАВЛЕНИЕ: Получаем карточку через обертку
+            const mafiaWrapper = document.getElementById(`mafia-wrapper-${cardType}-${cardId}`);
+            const mafiaCard = mafiaWrapper ? mafiaWrapper.querySelector('.mafia-card') : null;
 
             if (!mafiaCard) {
                 console.error(`Карточка мафии не найдена: mafia-card-${cardType}-${cardId}`);
                 return;
             }
             
-            // Переключаем состояние карточки
-            selectedMafiaCards[cardId][cardType] = !selectedMafiaCards[cardId][cardType];
-            
-            // Переключаем отображение карточки
-            if (selectedMafiaCards[cardId][cardType]) {
-                mafiaCard.style.display = 'block';
-                this.classList.add('selected');
+            // ИЗМЕНЕНО: Логика для серых карточек - увеличиваем счетчик
+            if (cardType === 'gray') {
+                // Инициализируем счетчик, если его нет
+                if (!window.grayCardsCount[cardId]) {
+                    window.grayCardsCount[cardId] = 0;
+                }
+                
+                // Увеличиваем счетчик (максимум 3 серые карточки)
+                window.grayCardsCount[cardId] = (window.grayCardsCount[cardId] + 1) % 4;
+                const newCount = window.grayCardsCount[cardId];
+                
+                // Обновляем отображение
+                if (newCount > 0) {
+                    mafiaCard.style.display = 'block';
+                    this.classList.add('selected');
+                    
+                    // ИСПРАВЛЕНИЕ: Обновляем счетчик в правильном контейнере
+                    const grayCounter = document.getElementById(`gray-counter-${cardId}`);
+                    if (grayCounter) {
+                        grayCounter.textContent = newCount;
+                        // ИЗМЕНЕНО: Показываем счетчик только при 2+ карточках
+                        grayCounter.style.display = newCount >= 2 ? 'block' : 'none';
+                    }
+                } else {
+                    mafiaCard.style.display = 'none';
+                    this.classList.remove('selected');
+                    
+                    // Скрываем счетчик
+                    const grayCounter = document.getElementById(`gray-counter-${cardId}`);
+                    if (grayCounter) {
+                        grayCounter.style.display = 'none';
+                    }
+                }
+                
+                // Сохраняем состояние
+                selectedMafiaCards[cardId][cardType] = newCount;
             } else {
-                mafiaCard.style.display = 'none';
-                this.classList.remove('selected');
+                // Для красных и желтых карточек - стандартная логика
+                selectedMafiaCards[cardId][cardType] = !selectedMafiaCards[cardId][cardType];
+                
+                // Переключаем отображение карточки
+                if (selectedMafiaCards[cardId][cardType]) {
+                    mafiaCard.style.display = 'block';
+                    this.classList.add('selected');
+                } else {
+                    mafiaCard.style.display = 'none';
+                    this.classList.remove('selected');
+                }
             }
 
-             // ИЗМЕНЕНО: Добавляем анимацию при переключении
+            // ИЗМЕНЕНО: Добавляем анимацию при переключении
             mafiaCard.classList.remove('animate');
             setTimeout(() => {
                 mafiaCard.classList.add('animate');
@@ -668,34 +738,7 @@ function initializeCards() {
         });
     });
 
-    // Добавляем обработчики для кнопок сброса отдельных плашек
-    const resetCardButtons = document.querySelectorAll('.reset-card-button');
-
-    resetCardButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const cardId = this.getAttribute('data-card');
-            resetSingleCard(cardId);
-        });
-    });
-
-    // Добавляем обработчик для кнопки сброса всех плашек
-    const resetButton = document.getElementById('reset-button');
-    if (resetButton) {
-        resetButton.addEventListener('click', function() {
-            // Сбрасываем все плашки по одной
-            for (let i = 1; i <= 10; i++) {
-                resetSingleCard(i);
-            }
-            
-            // Скрываем сообщение об ошибке
-            const errorElement = document.getElementById('role-error');
-            if (errorElement) {
-                errorElement.style.display = 'none';
-            }
-        });
-    }
-});
-
+// Глобальные функции для overlay.html
 window.setPlayerName = function(cardId, name) {
     console.log("setPlayerName called for card", cardId, "with name:", name);
     
@@ -749,34 +792,19 @@ window.setCardColor = function(cardId, color) {
         defaultImage.src = mafiaCardImages.blackCard;
         if (window.selectedRoles[cardId] !== 'don' && blackCardIcon) {
             blackCardIcon.style.display = 'block';
-            // Анимируем иконку
-            blackCardIcon.classList.remove('animate');
-            setTimeout(() => {
-                blackCardIcon.classList.add('animate');
-            }, 10);
+            animateBlackCardIcon(cardId);
         }
     }
 
     defaultImage.style.display = 'block';
+    hasColorSelected[cardId] = true;
     window.selectedColors[cardId] = color;
     
     if (window.selectedRoles[cardId]) {
-        const roleIcon = document.getElementById(`role-icon-${cardId}`);
-        if (roleIcon) {
-            roleIcon.src = roleIcons[window.selectedRoles[cardId]];
-            roleIcon.style.display = 'block';
-            roleIcon.classList.remove('animate');
-            setTimeout(() => {
-                roleIcon.classList.add('animate');
-            }, 10);
-        }
+        showRoleIcon(cardId, window.selectedRoles[cardId]);
     }
 
-    // Анимируем карточку
-    card.classList.remove('animate');
-    setTimeout(() => {
-        card.classList.add('animate');
-    }, 10);
+    animateCard(cardId);
 };
 
 window.setCardRole = function(cardId, role) {
@@ -791,35 +819,19 @@ window.setCardRole = function(cardId, role) {
     
     // Сохраняем новую роль
     window.selectedRoles[cardId] = role;
-    
-    // Обновляем счетчики
-    window.sheriffCount = 0;
-    window.donCount = 0;
-    for (const id in window.selectedRoles) {
-        if (window.selectedRoles[id] === 'sheriff') window.sheriffCount++;
-        else if (window.selectedRoles[id] === 'don') window.donCount++;
-    }
+    updateRoleCounters();
     
     // Показываем/скрываем иконки
     if (role === 'don' && blackCardIcon) {
         blackCardIcon.style.display = 'none';
-    } else if (window.selectedColors[cardId] === 'black' && blackCardIcon) {
+    } else if (hasColorSelected[cardId] && window.selectedColors[cardId] === 'black' && blackCardIcon) {
         blackCardIcon.style.display = 'block';
-        blackCardIcon.classList.remove('animate');
-        setTimeout(() => {
-            blackCardIcon.classList.add('animate');
-        }, 10);
+        animateBlackCardIcon(cardId);
     }
     
     // Показываем иконку роли
-    const roleIcon = document.getElementById(`role-icon-${cardId}`);
-    if (roleIcon && window.selectedColors[cardId]) {
-        roleIcon.src = roleIcons[role];
-        roleIcon.style.display = 'block';
-        roleIcon.classList.remove('animate');
-        setTimeout(() => {
-            roleIcon.classList.add('animate');
-        }, 10);
+    if (hasColorSelected[cardId]) {
+        showRoleIcon(cardId, role);
     }
 };
 
@@ -874,13 +886,49 @@ window.setCardStatus = function(cardId, status) {
 };
 
 window.setMafiaCard = function(cardId, cardType, visible) {
-    const mafiaCard = document.getElementById(`mafia-card-${cardType}-${cardId}`);
+    // ИСПРАВЛЕНИЕ: Получаем карточку через обертку
+    const mafiaWrapper = document.getElementById(`mafia-wrapper-${cardType}-${cardId}`);
+    const mafiaCard = mafiaWrapper ? mafiaWrapper.querySelector('.mafia-card') : null;
+    
     if (mafiaCard) {
-        if (visible) {
-            mafiaCard.style.display = 'block';
-            mafiaCard.classList.add('animate');
+        // Логика для серых карточек
+        if (cardType === 'gray') {
+            const count = typeof visible === 'number' ? visible : (visible ? 1 : 0);
+            
+            if (count > 0) {
+                mafiaCard.style.display = 'block';
+                mafiaCard.classList.add('animate');
+                
+                // ИСПРАВЛЕНИЕ: Обновляем счетчик в правильном контейнере
+                const grayCounter = document.getElementById(`gray-counter-${cardId}`);
+                if (grayCounter) {
+                    grayCounter.textContent = count;
+                    // ИЗМЕНЕНО: Показываем счетчик только при 2+ карточках
+                    grayCounter.style.display = count >= 2 ? 'block' : 'none';
+                }
+                
+                // Сохраняем количество
+                window.grayCardsCount[cardId] = count;
+            } else {
+                mafiaCard.style.display = 'none';
+                
+                // Скрываем счетчик
+                const grayCounter = document.getElementById(`gray-counter-${cardId}`);
+                if (grayCounter) {
+                    grayCounter.style.display = 'none';
+                }
+                
+                // Сбрасываем количество
+                window.grayCardsCount[cardId] = 0;
+            }
         } else {
-            mafiaCard.style.display = 'none';
+            // Для красных и желтых карточек - стандартная логика
+            if (visible) {
+                mafiaCard.style.display = 'block';
+                mafiaCard.classList.add('animate');
+            } else {
+                mafiaCard.style.display = 'none';
+            }
         }
     }
 };
@@ -939,6 +987,14 @@ window.resetSingleCard = function(cardId) {
     mafiaCards.forEach(card => {
         card.style.display = 'none';
     });
+    
+    // Сбрасываем счетчик серых карточек
+    window.grayCardsCount[cardId] = 0;
+    const grayCounter = document.getElementById(`gray-counter-${cardId}`);
+    if (grayCounter) {
+        grayCounter.textContent = '0';
+        grayCounter.style.display = 'none'; // ИЗМЕНЕНО: Всегда скрываем при сбросе
+    }
     
     // Запускаем анимацию сброса
     card.classList.remove('animate');
@@ -1036,3 +1092,31 @@ window.canAssignRole = function(role, cardId) {
     }
     return true;
 };
+
+    // Добавляем обработчики для кнопок сброса отдельных плашек
+    const resetCardButtons = document.querySelectorAll('.reset-card-button');
+
+    resetCardButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const cardId = this.getAttribute('data-card');
+            resetSingleCard(cardId);
+        });
+    });
+
+    // Добавляем обработчик для кнопки сброса всех плашек
+    const resetButton = document.getElementById('reset-button');
+    if (resetButton) {
+        resetButton.addEventListener('click', function() {
+            // Сбрасываем все плашки по одной
+            for (let i = 1; i <= 10; i++) {
+                resetSingleCard(i);
+            }
+            
+            // Скрываем сообщение об ошибке
+            const errorElement = document.getElementById('role-error');
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
+        });
+    }
+});

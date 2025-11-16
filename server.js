@@ -144,8 +144,13 @@ wss.on("connection", (ws) => {
         break;
         
       case "set_mafia_card":
-        platesState[data.cardId].mafiaCards[data.cardType] = data.visible;
-        break;
+          // ДОБАВЛЕНО: Для серых карточек сохраняем число, для остальных - boolean
+          if (data.cardType === 'gray') {
+              platesState[data.cardId].mafiaCards[data.cardType] = data.visible;
+          } else {
+              platesState[data.cardId].mafiaCards[data.cardType] = data.visible;
+          }
+          break;
         
       case "reset_card":
         resetSingleCard(data.cardId);
@@ -177,13 +182,18 @@ wss.on("connection", (ws) => {
   }
 });
 
+// В функции resetSingleCard измените:
 function resetSingleCard(cardId) {
   platesState[cardId] = {
     name: "",
     color: "default",
     role: null,
     status: null,
-    mafiaCards: { red: false, gray: false, yellow: false }
+    mafiaCards: { 
+      red: false, 
+      gray: 0,  // ИЗМЕНЕНО: теперь число вместо boolean
+      yellow: false 
+    }
   };
 }
 
